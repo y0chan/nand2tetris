@@ -18,15 +18,17 @@ class VMtranslator(object):
         self.dirpath = dirpath
 
     def vm_translater(self):
-        vm_files = self.catch_vm_file_list(self.dirpath)
         dir_path = self.review_dir_path(self.dirpath)
-        print(dir_path)
+        vm_files = self.catch_vm_file_list(dir_path)
 
         '''.asmファイルを作成し書き込んでいく'''
         with open(dir_path  + '.asm', 'w') as asm_file:
-            asm_file.write('popteen')
+            for vm_file in vm_files:
+                asm_file.write(vm_file)
+                asm_file.write('\n')
 
     '''ディレクトリから.vmファイルのリストを取得'''
+    '''ファイルリストはフルパスである必要がある'''
     def catch_vm_file_list(self, dirpath):
         vm_files = []
 
@@ -34,8 +36,7 @@ class VMtranslator(object):
         for file in files:
             name, ext = os.path.splitext(file)
             if ext == '.vm':
-                vm_files.append(file)
-
+                vm_files.append((dirpath + '/' + file))
         return vm_files
 
     '''ファイルパスの最後に'/'がある場合削除して返す'''
@@ -46,8 +47,10 @@ class VMtranslator(object):
 
         return dirpath
 
-
-
+'''class Parser'''
+class Parse(object):
+    def __init__(self,vm_file):
+        self.vm_file = vm_file
 
 '''main script start'''
 if __name__ == "__main__":
