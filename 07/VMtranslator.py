@@ -24,6 +24,8 @@ class VMtranslator(object):
         '''.asmファイルを作成し書き込んでいく'''
         with open(dir_path  + '.asm', 'w') as asm_file:
             for vm_file in vm_files:
+                parse = Parse(vm_file)
+                parse.parser()
                 asm_file.write(vm_file)
                 asm_file.write('\n')
 
@@ -51,6 +53,15 @@ class VMtranslator(object):
 class Parse(object):
     def __init__(self,vm_file):
         self.vm_file = vm_file
+
+    def parser(self):
+        with open(self.vm_file) as input:
+            for line in input:
+                line = line.rstrip()
+                print(line)
+
+    def command_type(self,command):
+        pass
 
 '''main script start'''
 if __name__ == "__main__":
