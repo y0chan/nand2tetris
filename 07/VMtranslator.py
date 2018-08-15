@@ -11,6 +11,20 @@ Usage:
 '''
 from sys import argv
 import os
+import re
+
+c_arithmetics = [
+    'add',
+    'sub',
+    'neg',
+    'eq',
+    'gt',
+    'lt',
+    'and',
+    'or',
+    'not'
+]
+
 
 '''class VMtransfer'''
 class VMtranslator(object):
@@ -58,10 +72,21 @@ class Parse(object):
         with open(self.vm_file) as input:
             for line in input:
                 line = line.rstrip()
-                print(line)
+                if line == '' or re.match(r'//',line):
+                    continue
+                line_array = line.split(' ')
+                line_command_type = self.command_type(line_array[0])
+                print(line_command_type)
 
     def command_type(self,command):
-        pass
+        if command in c_arithmetics:
+            return 'C_ARITHMETIC'
+        elif command == 'push':
+            return 'C_PUSH'
+        elif command == 'pop':
+            return 'C_POP'
+        else:
+            return 'null'
 
 '''main script start'''
 if __name__ == "__main__":
