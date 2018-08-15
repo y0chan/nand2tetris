@@ -76,7 +76,6 @@ class Parse(object):
                     continue
                 line_array = line.split(' ')
                 line_command_type = self.command_type(line_array[0])
-                print(line_command_type)
 
     def command_type(self,command):
         if command in c_arithmetics:
