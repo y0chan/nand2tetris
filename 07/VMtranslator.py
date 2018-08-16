@@ -76,6 +76,18 @@ class Parse(object):
                     continue
                 line_array = line.split(' ')
                 line_command_type = self.command_type(line_array[0])
+                # line_arrayの長さが1でなかったら引数があるよ
+                if len(line_array) > 1:
+                    command_arg1 = line_array[1]
+                    command_arg2 = line_array[2]
+                else:
+                    command_arg1 = ''
+                    command_arg2 = ''
+
+                print(command_arg1)
+                print(command_arg2)
+
+                # command_typeとcommand,arg1とarg2が解析できた
 
     def command_type(self,command):
         if command in c_arithmetics:
@@ -86,6 +98,7 @@ class Parse(object):
             return 'C_POP'
         else:
             return 'null'
+
 
 '''main script start'''
 if __name__ == "__main__":
