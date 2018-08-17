@@ -84,10 +84,9 @@ class Parse(object):
                     command_arg1 = ''
                     command_arg2 = ''
 
-                print(command_arg1)
-                print(command_arg2)
-
-                # command_typeとcommand,arg1とarg2が解析できた
+                # command_type Cの場合は具体的にどれ？
+                if line_command_type == 'C_ARITHMETIC':
+                    
 
     def command_type(self,command):
         if command in c_arithmetics:
