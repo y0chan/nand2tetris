@@ -25,6 +25,20 @@ c_arithmetics = [
     'not'
 ]
 
+symboltable = {
+            'SP':'0',
+            'LCL':'1',
+            'ARG':'2',
+            'THIS':'3',
+            'THAT':'4',
+            'SCREEN':'16384',
+            'KBD':'24576'
+            }
+for i in range(0,16):
+    key = 'R' + str(i)
+    symboltable[key] = str(i)
+
+print(symboltable)
 
 '''class VMtransfer'''
 class VMtranslator(object):
@@ -67,6 +81,7 @@ class VMtranslator(object):
 class Parse(object):
     def __init__(self,vm_file):
         self.vm_file = vm_file
+        self.codewriter = CodeWriter()
 
     def parser(self):
         with open(self.vm_file) as input:
@@ -80,13 +95,14 @@ class Parse(object):
                 if len(line_array) > 1:
                     command_arg1 = line_array[1]
                     command_arg2 = line_array[2]
+                # 引数なしの場合
                 else:
                     command_arg1 = ''
                     command_arg2 = ''
 
-                # command_type Cの場合は具体的にどれ？
-                if line_command_type == 'C_ARITHMETIC':
-                    
+                # ここまででvmのコマンドと引数はわかったので
+                # class CodeWriterでコマンドを返す
+                # commandとarg1とarg2を渡す
 
     def command_type(self,command):
         if command in c_arithmetics:
@@ -98,6 +114,10 @@ class Parse(object):
         else:
             return 'null'
 
+'''class Parser'''
+class CodeWriter(object):
+    def __init__(self):
+        pass
 
 '''main script start'''
 if __name__ == "__main__":
