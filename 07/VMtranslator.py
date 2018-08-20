@@ -25,20 +25,25 @@ c_arithmetics = [
     'not'
 ]
 
+# lavel:RAM Address
 symboltable = {
-            'SP':'0',
-            'LCL':'1',
-            'ARG':'2',
-            'THIS':'3',
-            'THAT':'4',
-            'SCREEN':'16384',
-            'KBD':'24576'
+            'SP':0,
+            'LCL':1,
+            'ARG':2,
+            'THIS':3,
+            'THAT':4,
+            'SCREEN':16384,
+            'KBD':24576
             }
 for i in range(0,16):
     key = 'R' + str(i)
-    symboltable[key] = str(i)
+    symboltable[key] = i
 
-print(symboltable)
+# RAM value
+Ram = [0 for w in range(32768)]
+
+# initial RAM setting
+Ram[symboltable['SP']] = 256
 
 '''class VMtransfer'''
 class VMtranslator(object):
@@ -91,6 +96,7 @@ class Parse(object):
                     continue
                 line_array = line.split(' ')
                 line_command_type = self.command_type(line_array[0])
+                command = line_array[0]
                 # line_arrayの長さが1でなかったら引数があるよ
                 if len(line_array) > 1:
                     command_arg1 = line_array[1]
@@ -103,6 +109,11 @@ class Parse(object):
                 # ここまででvmのコマンドと引数はわかったので
                 # class CodeWriterでコマンドを返す
                 # commandとarg1とarg2を渡す
+                if command == 'pop' or command == 'push':
+                    self.codewriter.writepushpop(command,command_arg1,command_arg2)
+                    #print(Ram[symboltable['SP']])
+                    #print(Ram[Ram[symboltable['SP']]])
+
 
     def command_type(self,command):
         if command in c_arithmetics:
@@ -118,6 +129,13 @@ class Parse(object):
 class CodeWriter(object):
     def __init__(self):
         pass
+
+    def writepushpop(self,command,arg1,arg2):
+        if arg1 == 'constant':
+            SP_number = Ram[symboltable['SP']]
+            Ram[SP_number] = arg2
+            Ram[symboltable['SP']] += 1
+
 
 '''main script start'''
 if __name__ == "__main__":
