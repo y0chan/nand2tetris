@@ -110,7 +110,8 @@ class Parse(object):
                 # class CodeWriterでコマンドを返す
                 # commandとarg1とarg2を渡す
                 if command == 'pop' or command == 'push':
-                    self.codewriter.writepushpop(command,command_arg1,command_arg2)
+                    asm = self.codewriter.writepushpop(command,command_arg1,command_arg2)
+                    print(asm)
                     #print(Ram[symboltable['SP']])
                     #print(Ram[Ram[symboltable['SP']]])
 
@@ -131,10 +132,17 @@ class CodeWriter(object):
         pass
 
     def writepushpop(self,command,arg1,arg2):
+        asm = []
         if arg1 == 'constant':
-            SP_number = Ram[symboltable['SP']]
-            Ram[SP_number] = arg2
-            Ram[symboltable['SP']] += 1
+            if command == 'push':
+                asm.append('@' + str(Ram[symboltable['SP']]))
+                SP_number = Ram[symboltable['SP']]
+
+                asm.append('M='+str(arg2))
+                Ram[SP_number] = arg2 # メモリに値を入れる
+
+                Ram[symboltable['SP']] += 1 # SPの値を更新する
+                return asm
 
 
 '''main script start'''
