@@ -51,6 +51,7 @@ class VMtranslator(object):
         self.dirpath = dirpath
 
     def vm_translater(self):
+        asm_command_array = []
         dir_path = self.review_dir_path(self.dirpath)
         vm_files = self.catch_vm_file_list(dir_path)
 
@@ -58,7 +59,8 @@ class VMtranslator(object):
         with open(dir_path  + '.asm', 'w') as asm_file:
             for vm_file in vm_files:
                 parse = Parse(vm_file)
-                parse.parser()
+                asm_command_array.append(parse.parser())
+                print(asm_command_array)
                 asm_file.write(vm_file)
                 asm_file.write('\n')
 
@@ -89,6 +91,7 @@ class Parse(object):
         self.codewriter = CodeWriter()
 
     def parser(self):
+        asm_array = []
         with open(self.vm_file) as input:
             for line in input:
                 line = line.rstrip()
@@ -111,9 +114,10 @@ class Parse(object):
                 # commandとarg1とarg2を渡す
                 if command == 'pop' or command == 'push':
                     asm = self.codewriter.writepushpop(command,command_arg1,command_arg2)
-                    print(asm)
+                    asm_array.append(asm)
                     #print(Ram[symboltable['SP']])
                     #print(Ram[Ram[symboltable['SP']]])
+        return asm_array
 
 
     def command_type(self,command):
