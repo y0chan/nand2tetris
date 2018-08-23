@@ -49,20 +49,22 @@ Ram[symboltable['SP']] = 256
 class VMtranslator(object):
     def __init__(self, dirpath):
         self.dirpath = dirpath
+        self.parse = Parse()
 
     def vm_translater(self):
         asm_command_array = []
         dir_path = self.review_dir_path(self.dirpath)
         vm_files = self.catch_vm_file_list(dir_path)
 
+
         '''.asmファイルを作成し書き込んでいく'''
-        with open(dir_path  + '.asm', 'w') as asm_file:
-            for vm_file in vm_files:
-                parse = Parse(vm_file)
-                asm_command_array.append(parse.parser())
-                print(asm_command_array)
-                asm_file.write(vm_file)
-                asm_file.write('\n')
+        #with open(dir_path  + '.asm', 'w') as asm_file:
+        #    for vm_file in vm_files:
+        #        parse = Parse(vm_file)
+        #        asm_command_array.append(parse.parser())
+        #        asm_file.write(vm_file)
+        #        asm_file.write('\n')
+        self.parse.write_asm(dir_path,vm_files)
 
     '''ディレクトリから.vmファイルのリストを取得'''
     '''ファイルリストはフルパスである必要がある'''
@@ -86,13 +88,19 @@ class VMtranslator(object):
 
 '''class Parser'''
 class Parse(object):
-    def __init__(self,vm_file):
-        self.vm_file = vm_file
+    def __init__(self):
+        #self.vm_file = vm_file
         self.codewriter = CodeWriter()
 
-    def parser(self):
-        asm_array = []
-        with open(self.vm_file) as input:
+    def write_asm(self,dir_path,vm_files):
+        with open(dir_path  + '.asm', 'w') as asm_file:
+            for vm_file in vm_files:
+                return_asm = self.parser(vm_file)
+                print(return_asm)
+
+
+    def parser(self,vm_file):
+        with open(vm_file) as input:
             for line in input:
                 line = line.rstrip()
                 if line == '' or re.match(r'//',line):
@@ -114,10 +122,9 @@ class Parse(object):
                 # commandとarg1とarg2を渡す
                 if command == 'pop' or command == 'push':
                     asm = self.codewriter.writepushpop(command,command_arg1,command_arg2)
-                    asm_array.append(asm)
                     #print(Ram[symboltable['SP']])
                     #print(Ram[Ram[symboltable['SP']]])
-        return asm_array
+                return asm
 
 
     def command_type(self,command):
