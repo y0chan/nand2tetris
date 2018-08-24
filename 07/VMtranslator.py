@@ -13,18 +13,7 @@ from sys import argv
 import os
 import re
 
-c_arithmetics = [
-    'add',
-    'sub',
-    'neg',
-    'eq',
-    'gt',
-    'lt',
-    'and',
-    'or',
-    'not'
-]
-
+'''Initial Setting'''
 # lavel:RAM Address
 symboltable = {
             'SP':0,
@@ -39,125 +28,109 @@ for i in range(0,16):
     key = 'R' + str(i)
     symboltable[key] = i
 
-# RAM value
+# RAM
 Ram = [0 for w in range(32768)]
-
 # initial RAM setting
 Ram[symboltable['SP']] = 256
 
-'''class VMtransfer'''
-class VMtranslator(object):
-    def __init__(self, dirpath):
-        self.dirpath = dirpath
-        self.parse = Parse()
-
-    def vm_translater(self):
-        asm_command_array = []
-        dir_path = self.review_dir_path(self.dirpath)
-        vm_files = self.catch_vm_file_list(dir_path)
-
-
-        '''.asmファイルを作成し書き込んでいく'''
-        #with open(dir_path  + '.asm', 'w') as asm_file:
-        #    for vm_file in vm_files:
-        #        parse = Parse(vm_file)
-        #        asm_command_array.append(parse.parser())
-        #        asm_file.write(vm_file)
-        #        asm_file.write('\n')
-        self.parse.write_asm(dir_path,vm_files)
-
-    '''ディレクトリから.vmファイルのリストを取得'''
-    '''ファイルリストはフルパスである必要がある'''
-    def catch_vm_file_list(self, dirpath):
-        vm_files = []
-
-        files = os.listdir(dirpath)
-        for file in files:
-            name, ext = os.path.splitext(file)
-            if ext == '.vm':
-                vm_files.append((dirpath + '/' + file))
-        return vm_files
-
-    '''ファイルパスの最後に'/'がある場合削除して返す'''
-    def review_dir_path(self, dirpath):
-        # dirpathの最後が'/'である場合
-        if dirpath[-1] == '/':
-            dirpath = dirpath[:-1] #  最後の'/'を取る
-
-        return dirpath
-
-'''class Parser'''
-class Parse(object):
-    def __init__(self):
-        #self.vm_file = vm_file
+'''class VMTranslator'''
+class VMTranslator(object):
+    def __init__(self,dir_path):
+        self.dir_path = dir_path
+        self.parser = Parser()
         self.codewriter = CodeWriter()
 
-    def write_asm(self,dir_path,vm_files):
-        with open(dir_path  + '.asm', 'w') as asm_file:
-            for vm_file in vm_files:
-                return_asm = self.parser(vm_file)
-                print(return_asm)
+    def translater(self):
 
+        # ディレクトリ内のvmファイルのリストを取得
+        vm_files = []
 
-    def parser(self,vm_file):
-        with open(vm_file) as input:
-            for line in input:
-                line = line.rstrip()
-                if line == '' or re.match(r'//',line):
-                    continue
-                line_array = line.split(' ')
-                line_command_type = self.command_type(line_array[0])
-                command = line_array[0]
-                # line_arrayの長さが1でなかったら引数があるよ
-                if len(line_array) > 1:
-                    command_arg1 = line_array[1]
-                    command_arg2 = line_array[2]
-                # 引数なしの場合
-                else:
-                    command_arg1 = ''
-                    command_arg2 = ''
+        for file in os.listdir(self.dir_path):
+            file_path = os.path.join(dir_path,file)
+            file_name, file_ext = os.path.splitext(file)
+            if file_ext == '.vm':
+                vm_files.append(file_path)
 
-                # ここまででvmのコマンドと引数はわかったので
-                # class CodeWriterでコマンドを返す
-                # commandとarg1とarg2を渡す
-                if command == 'pop' or command == 'push':
-                    asm = self.codewriter.writepushpop(command,command_arg1,command_arg2)
-                    #print(Ram[symboltable['SP']])
-                    #print(Ram[Ram[symboltable['SP']]])
-                return asm
+        for vm_file in vm_files:
+            with open(vm_file) as vm:
+                for vm_line in vm:
+                    command,arg1,arg2 = self.parser.parser(vm_line)
 
+                    if command:
+                        print('test')
 
-    def command_type(self,command):
-        if command in c_arithmetics:
-            return 'C_ARITHMETIC'
-        elif command == 'push':
-            return 'C_PUSH'
-        elif command == 'pop':
-            return 'C_POP'
-        else:
-            return 'null'
 
 '''class Parser'''
+class Parser(object):
+    def __init__(self):
+        pass
+
+    def parser(self,vm_line):
+        vm_line = vm_line.rstrip()
+
+        if self.command_descrimination(vm_line):
+            command, arg1, arg2 = self.command_parser(vm_line)
+            command_type = self.command_type(command)
+        else:
+            command, arg1, arg2 = None,None,None
+
+        return command, arg1, arg2
+
+    '''vmファイルの一行が与えられ、それがコマンド行かを判別する'''
+    '''コマンド行ならばTrueを返す'''
+    def command_descrimination(self,vm_line):
+        if re.match(r'//',vm_line) or vm_line == '':
+            return False
+        else:
+            return True
+
+    '''コマンド行を分解して、command arg1 arg2を返す'''
+    def command_parser(self,vm_line):
+        vm_line_array = vm_line.split()
+        length_vm_line = len(vm_line_array)
+
+        command = vm_line_array[0]
+
+        if length_vm_line == 1:
+            arg1 = None
+            arg2 = None
+        elif length_vm_line == 2:
+            arg1 = vm_line_array[1]
+            arg2 = None
+        else:
+            arg1 = vm_line_array[1]
+            arg2 = vm_line_array[2]
+
+        return command, arg1, arg2
+
+    '''command_typeを返す'''
+    def command_type(self,command):
+        command_arithmetics = [
+                                'add',
+                                'sub',
+                                'neg',
+                                'eq',
+                                'gt',
+                                'lt',
+                                'and',
+                                'or',
+                                'not'
+                                ]
+
+        if command in command_arithmetics:
+            return 'C_ARITHMETRIC'
+        elif command == 'pop':
+            return 'C_POP'
+        elif command == 'push':
+            return 'C_PUSH'
+
+'''class CodeWriter'''
 class CodeWriter(object):
     def __init__(self):
         pass
 
-    def writepushpop(self,command,arg1,arg2):
-        asm = []
-        if arg1 == 'constant':
-            if command == 'push':
-                asm.append('@' + str(Ram[symboltable['SP']]))
-                SP_number = Ram[symboltable['SP']]
-
-                asm.append('M='+str(arg2))
-                Ram[SP_number] = arg2 # メモリに値を入れる
-
-                Ram[symboltable['SP']] += 1 # SPの値を更新する
-                return asm
-
-
 '''main script start'''
 if __name__ == "__main__":
-    script, dirname = argv
-    vmtranslater = VMtranslator(dirname)
-    vmtranslater.vm_translater()
+    script, dir_path = argv
+    vmt = VMTranslator(dir_path)
+    vmt.translater()
