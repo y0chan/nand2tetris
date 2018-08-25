@@ -54,7 +54,7 @@ class VMTranslator(object):
         for vm_file in vm_files:
             with open(vm_file) as vm:
                 for vm_line in vm:
-                    command,arg1,arg2 = self.parser.parser(vm_line)
+                    command,arg1,arg2,command_type = self.parser.parser(vm_line)
 
                     if command:
                         print('test')
@@ -72,9 +72,9 @@ class Parser(object):
             command, arg1, arg2 = self.command_parser(vm_line)
             command_type = self.command_type(command)
         else:
-            command, arg1, arg2 = None,None,None
+            command, arg1, arg2, command_type = None,None,None,None
 
-        return command, arg1, arg2
+        return command, arg1, arg2, command_type
 
     '''vmファイルの一行が与えられ、それがコマンド行かを判別する'''
     '''コマンド行ならばTrueを返す'''
