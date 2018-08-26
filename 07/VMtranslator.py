@@ -8,6 +8,7 @@ OS:
 
 Usage:
     python 3.6 VMtransfer.py [Directory including .vm file]
+    * Don't add last word of path '/'
 '''
 from sys import argv
 import os
@@ -42,6 +43,10 @@ class VMTranslator(object):
 
     def translater(self):
 
+        # 引数のディレクトリ名を取得
+        dirname = self.get_argdirname(self.dir_path)
+        print(dirname)
+
         # ディレクトリ内のvmファイルのリストを取得
         vm_files = []
 
@@ -59,6 +64,9 @@ class VMTranslator(object):
                     if command:
                         print('test')
 
+    def get_argdirname(self,dir_path):
+        argdirname = os.path.dirname(dir_path)
+        return argdirname
 
 '''class Parser'''
 class Parser(object):
@@ -128,6 +136,16 @@ class Parser(object):
 class CodeWriter(object):
     def __init__(self):
         pass
+
+    def set_file_name(self):
+        pass
+
+    def write_arithmetric(self):
+        pass
+
+    def write_push_pop(self):
+        pass
+
 
 '''main script start'''
 if __name__ == "__main__":
