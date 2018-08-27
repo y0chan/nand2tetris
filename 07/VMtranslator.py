@@ -44,12 +44,16 @@ class VMTranslator(object):
     def translater(self):
 
         # 引数のディレクトリ名を取得
+        #　いらなかったかも。。。。。
         dirname = self.get_argdirname(self.dir_path)
-        print(dirname)
+
+        # [引数のディレクトリ名.asm]を作成する
+        self.codewriter.set_file_name(self.dir_path)
 
         # ディレクトリ内のvmファイルのリストを取得
         vm_files = []
 
+        #ディレクトリ内のvmファイルをリストで取得する
         for file in os.listdir(self.dir_path):
             file_path = os.path.join(dir_path,file)
             file_name, file_ext = os.path.splitext(file)
@@ -64,6 +68,8 @@ class VMTranslator(object):
                     if command:
                         print('test')
 
+    # 引数の最後に/がついているとだめなバグがある。。。
+    # いらなかったかも。。
     def get_argdirname(self,dir_path):
         argdirname = os.path.dirname(dir_path)
         return argdirname
@@ -137,8 +143,10 @@ class CodeWriter(object):
     def __init__(self):
         pass
 
-    def set_file_name(self):
-        pass
+    # 作成するasmファイルをopenする
+    def set_file_name(self,dir_path):
+        with open(dir_path + '.asm','w') as f:
+            f.write('testtest\n')
 
     def write_arithmetric(self):
         pass
