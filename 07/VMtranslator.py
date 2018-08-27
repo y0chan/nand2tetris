@@ -45,7 +45,7 @@ class VMTranslator(object):
 
         # 引数のディレクトリ名を取得
         #　いらなかったかも。。。。。
-        dirname = self.get_argdirname(self.dir_path)
+        #dirname = self.get_argdirname(self.dir_path)
 
         # [引数のディレクトリ名.asm]を作成する
         self.codewriter.set_file_name(self.dir_path)
@@ -66,7 +66,10 @@ class VMTranslator(object):
                     command,arg1,arg2,command_type = self.parser.parser(vm_line)
 
                     if command:
-                        print('test')
+                        if command_type == 'C_ARITHMETRIC':
+                            self.codewriter.write_arithmetric(dir_path,command,arg1,arg2)
+                        if command_type == 'C_POP' or command_type == 'C_PUSH':
+                            self.codewriter.write_push_pop(dir_path,command,arg1,arg2)
 
     # 引数の最後に/がついているとだめなバグがある。。。
     # いらなかったかも。。
@@ -143,16 +146,45 @@ class CodeWriter(object):
     def __init__(self):
         pass
 
-    # 作成するasmファイルをopenする
+    # 作成するasmファイルを初期化する
     def set_file_name(self,dir_path):
         with open(dir_path + '.asm','w') as f:
-            f.write('testtest\n')
+            print(dir_path + '.asm file created.')
 
-    def write_arithmetric(self):
-        pass
+    def write_arithmetric(self,dir_path,command,arg1,arg2):
+        with open(dir_path + '.asm','a') as f:
+            if command == 'add':
+                memory_address = Ram[symboltable['SP']] - 1 #stackの先頭は(SP-1)
+                asm_code = '@' + str(memory_address) +'\n'
+                f.write(asm_code)
+                f.write('D=M\n')
 
-    def write_push_pop(self):
-        pass
+                memory_address -= 1
+                asm_code = '@' + str(memory_address) +'\n'
+                f.write(asm_code)
+                f.write('M=M+D\n')
+
+                # memory操作
+                Ram[symboltable['SP']] -= 1
+                memory_address = Ram[symboltable['SP']] - 1
+                Ram[memory_address] += Ram[memory_address + 1]
+
+
+    def write_push_pop(self,dir_path,command,arg1,arg2):
+        with open(dir_path + '.asm','a') as f:
+                if arg1 == 'constant':
+                    # memory操作
+                    memory_address = Ram[symboltable['SP']]
+                    asm_code = '@' + str(memory_address) + '\n'
+                    f.write(asm_code)
+
+                    Ram[memory_address] = arg2
+                    asm_code = 'M=' + str(arg2) + '\n'
+                    f.write(asm_code)
+
+                    Ram[symboltable['SP']] += 1
+
+
 
 
 '''main script start'''
