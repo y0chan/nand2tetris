@@ -179,8 +179,9 @@ class CodeWriter(object):
                     f.write(asm_code)
 
                     Ram[memory_address] = arg2
-                    asm_code = 'M=' + str(arg2) + '\n'
-                    f.write(asm_code)
+                    f.write('M=0\n')
+                    for i in range(0,int(arg2)):
+                        f.write('M=M+1\n')
 
                     Ram[symboltable['SP']] += 1
 
