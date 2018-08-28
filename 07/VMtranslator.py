@@ -44,7 +44,6 @@ class VMTranslator(object):
 
         # 引数のディレクトリ名を取得
         dirname = self.get_argdirname(self.dir_path)
-        print(dirname)
 
         # [引数のディレクトリ名.asm]を作成する
         self.codewriter.set_file_name(self.dir_path,dirname)
@@ -66,13 +65,12 @@ class VMTranslator(object):
 
                     if command:
                         if command_type == 'C_ARITHMETRIC':
-                            self.codewriter.write_arithmetric(dir_path,command,arg1,arg2)
+                            self.codewriter.write_arithmetric(dir_path,dirname,command,arg1,arg2)
                         if command_type == 'C_POP' or command_type == 'C_PUSH':
-                            self.codewriter.write_push_pop(dir_path,command,arg1,arg2)
+                            self.codewriter.write_push_pop(dir_path,dirname,command,arg1,arg2)
 
     def get_argdirname(self,dir_path):
         tmp_array = dir_path.split('/')
-        print(tmp_array)
         argdirname = tmp_array[-2]
         return argdirname
 
@@ -146,12 +144,19 @@ class CodeWriter(object):
         pass
 
     # 作成するasmファイルを初期化する
+    # このときRAM[0] = 256 (SP)になるように機械語を出力しておく。
     def set_file_name(self,dir_path,dirname):
         with open(dir_path + dirname + '.asm','w') as f:
             print(dir_path + dirname + '.asm file created.')
 
-    def write_arithmetric(self,dir_path,command,arg1,arg2):
-        with open(dir_path + '.asm','a') as f:
+            # RAM[0] = 256の設定
+            f.write('@0\n')
+            f.write('M=0\n')
+            for i in range(0,256):
+                f.write('M=M+1\n')
+
+    def write_arithmetric(self,dir_path,dirname,command,arg1,arg2):
+        with open(dir_path + dirname + '.asm','a') as f:
             if command == 'add':
                 memory_address = Ram[symboltable['SP']] - 1 #stackの先頭は(SP-1)
                 asm_code = '@' + str(memory_address) +'\n'
@@ -167,10 +172,12 @@ class CodeWriter(object):
                 Ram[symboltable['SP']] -= 1
                 memory_address = Ram[symboltable['SP']] - 1
                 Ram[memory_address] += Ram[memory_address + 1]
+                f.write('@0\n')
+                f.write('M=M-1\n')
 
 
-    def write_push_pop(self,dir_path,command,arg1,arg2):
-        with open(dir_path + '.asm','a') as f:
+    def write_push_pop(self,dir_path,dirname,command,arg1,arg2):
+        with open(dir_path + dirname +'.asm','a') as f:
                 if arg1 == 'constant':
                     # memory操作
                     memory_address = Ram[symboltable['SP']]
@@ -183,8 +190,8 @@ class CodeWriter(object):
                         f.write('M=M+1\n')
 
                     Ram[symboltable['SP']] += 1
-
-
+                    f.write('@0\n')
+                    f.write('M=M+1\n')
 
 
 '''main script start'''
