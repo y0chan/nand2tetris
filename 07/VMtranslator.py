@@ -8,7 +8,6 @@ OS:
 
 Usage:
     python 3.6 VMtransfer.py [Directory including .vm file]
-    * Don't add last word of path '/'
 '''
 from sys import argv
 import os
@@ -44,11 +43,11 @@ class VMTranslator(object):
     def translater(self):
 
         # 引数のディレクトリ名を取得
-        #　いらなかったかも。。。。。
-        #dirname = self.get_argdirname(self.dir_path)
+        dirname = self.get_argdirname(self.dir_path)
+        print(dirname)
 
         # [引数のディレクトリ名.asm]を作成する
-        self.codewriter.set_file_name(self.dir_path)
+        self.codewriter.set_file_name(self.dir_path,dirname)
 
         # ディレクトリ内のvmファイルのリストを取得
         vm_files = []
@@ -71,10 +70,10 @@ class VMTranslator(object):
                         if command_type == 'C_POP' or command_type == 'C_PUSH':
                             self.codewriter.write_push_pop(dir_path,command,arg1,arg2)
 
-    # 引数の最後に/がついているとだめなバグがある。。。
-    # いらなかったかも。。
     def get_argdirname(self,dir_path):
-        argdirname = os.path.dirname(dir_path)
+        tmp_array = dir_path.split('/')
+        print(tmp_array)
+        argdirname = tmp_array[-2]
         return argdirname
 
 '''class Parser'''
@@ -147,9 +146,9 @@ class CodeWriter(object):
         pass
 
     # 作成するasmファイルを初期化する
-    def set_file_name(self,dir_path):
-        with open(dir_path + '.asm','w') as f:
-            print(dir_path + '.asm file created.')
+    def set_file_name(self,dir_path,dirname):
+        with open(dir_path + dirname + '.asm','w') as f:
+            print(dir_path + dirname + '.asm file created.')
 
     def write_arithmetric(self,dir_path,command,arg1,arg2):
         with open(dir_path + '.asm','a') as f:
@@ -191,5 +190,10 @@ class CodeWriter(object):
 '''main script start'''
 if __name__ == "__main__":
     script, dir_path = argv
+
+    # dir_pathの最後に'/'がなかったら追加する。
+    if dir_path[-1] != '/':
+        dir_path = dir_path + '/'
+
     vmt = VMTranslator(dir_path)
     vmt.translater()
