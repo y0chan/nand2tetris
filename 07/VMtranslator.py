@@ -150,10 +150,11 @@ class CodeWriter(object):
             print(dir_path + dirname + '.asm file created.')
 
             # RAM[0] = 256の設定
-            f.write('@0\n')
-            f.write('M=0\n')
-            for i in range(0,256):
-                f.write('M=M+1\n')
+            f.write('@256\n')
+            f.write('D=A\n')
+            memory_address = symboltable['SP']
+            f.write('@'+str(memory_address)+'\n')
+            f.write('M=D\n')
 
     def write_arithmetric(self,dir_path,dirname,command,arg1,arg2):
         with open(dir_path + dirname + '.asm','a') as f:
@@ -178,17 +179,16 @@ class CodeWriter(object):
 
     def write_push_pop(self,dir_path,dirname,command,arg1,arg2):
         with open(dir_path + dirname +'.asm','a') as f:
+            if command == 'push':
                 if arg1 == 'constant':
                     # memory操作
+                    f.write('@'+str(arg2)+'\n')
+                    f.write('D=A\n')
                     memory_address = Ram[symboltable['SP']]
-                    asm_code = '@' + str(memory_address) + '\n'
-                    f.write(asm_code)
+                    f.write('@'+str(memory_address)+'\n')
+                    f.write('M=D\n')
 
-                    Ram[memory_address] = arg2
-                    f.write('M=0\n')
-                    for i in range(0,int(arg2)):
-                        f.write('M=M+1\n')
-
+                    # SPの更新
                     Ram[symboltable['SP']] += 1
                     f.write('@0\n')
                     f.write('M=M+1\n')
