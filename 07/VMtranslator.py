@@ -180,17 +180,21 @@ class CodeWriter(object):
                 SP_address = Ram[symboltable['SP']]
 
                 f.write('@' + str(SP_address-2) + '\n')
-                f.write('D=M\n')
 
                 if Ram[SP_address-1] == Ram[SP_address-2]:
                     Ram[SP_address-2] = -1
                     # 以下にasmを記載
+                    f.write('M=-1\n')
+
                 else:
                     Ram[SP_address-2] = 0
                     # 以下にasmを記載
-
+                    f.write('M=0\n')
 
                 Ram[SP_address] -= 1
+                f.write('@' + str(SP_address)+'\n')
+                f.write('M=M-1\n')
+
 
 
     def write_push_pop(self,dir_path,dirname,command,arg1,arg2):
