@@ -179,23 +179,30 @@ class CodeWriter(object):
             if command == 'eq':
                 SP_address = Ram[symboltable['SP']]
 
-                f.write('@' + str(SP_address-2) + '\n')
+                if Ram[SP_address - 2] == Ram[SP_address -1]:
+                    Ram[SP_address - 2] = Ram[SP_address] - 1
 
-                if Ram[SP_address-1] == Ram[SP_address-2]:
-                    Ram[SP_address-2] = -1
-                    # 以下にasmを記載
-                    f.write('M=-1\n')
-
+                    f.write('@1\n')
+                    f.write('D=-A\n')
                 else:
-                    Ram[SP_address-2] = 0
-                    # 以下にasmを記載
-                    f.write('M=0\n')
+                    Ram[SP_address - 2] = 0
 
-                Ram[SP_address] -= 1
-                f.write('@' + str(SP_address)+'\n')
+                    f.write('@0\n')
+                    f.write('D=A\n')
+
+                f.write('@' + str(SP_address-2) + '\n')
+                f.write('M=D\n')
+
+                Ram[symboltable['SP']] = Ram[symboltable['SP']] - 1
+                f.write('@0\n')
                 f.write('M=M-1\n')
 
-
+                #print('-' * 10)
+                #print(Ram[0])
+                #print(Ram[256])
+                #print(Ram[257])
+                #print(Ram[258])
+                #print(Ram[259])
 
     def write_push_pop(self,dir_path,dirname,command,arg1,arg2):
         with open(dir_path + dirname +'.asm','a') as f:
@@ -207,11 +214,19 @@ class CodeWriter(object):
                     memory_address = Ram[symboltable['SP']]
                     f.write('@'+str(memory_address)+'\n')
                     f.write('M=D\n')
+                    Ram[memory_address] = arg2
 
                     # SPの更新
-                    Ram[symboltable['SP']] += 1
+                    Ram[symboltable['SP']] = Ram[symboltable['SP']] + 1
                     f.write('@0\n')
                     f.write('M=M+1\n')
+
+                    #print('-' * 10)
+                    #print(Ram[0])
+                    #print(Ram[256])
+                    #print(Ram[257])
+                    #print(Ram[258])
+                    #print(Ram[259])
 
 
 '''main script start'''
