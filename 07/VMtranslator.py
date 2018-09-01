@@ -176,6 +176,7 @@ class CodeWriter(object):
                 f.write('@0\n')
                 f.write('M=M-1\n')
 
+            # eq lt と処理が同じなのでまとめられそう。違うのはif文だけ 
             if command == 'eq':
                 SP_address = Ram[symboltable['SP']]
 
@@ -197,12 +198,49 @@ class CodeWriter(object):
                 f.write('@0\n')
                 f.write('M=M-1\n')
 
-                #print('-' * 10)
-                #print(Ram[0])
-                #print(Ram[256])
-                #print(Ram[257])
-                #print(Ram[258])
-                #print(Ram[259])
+            # eq lt と処理が同じなのでまとめられそう。違うのはif文だけ
+            if command == 'lt':
+                SP_address = Ram[symboltable['SP']]
+
+                if Ram[SP_address - 2] < Ram[SP_address -1]:
+                    Ram[SP_address - 2] = Ram[SP_address] - 1
+
+                    f.write('@1\n')
+                    f.write('D=-A\n')
+                else:
+                    Ram[SP_address - 2] = 0
+
+                    f.write('@0\n')
+                    f.write('D=A\n')
+
+                f.write('@' + str(SP_address-2) + '\n')
+                f.write('M=D\n')
+
+                Ram[symboltable['SP']] = Ram[symboltable['SP']] - 1
+                f.write('@0\n')
+                f.write('M=M-1\n')
+
+            # eq lt と処理が同じなのでまとめられそう。違うのはif文だけ
+            if command == 'gt':
+                SP_address = Ram[symboltable['SP']]
+
+                if Ram[SP_address - 2] > Ram[SP_address -1]:
+                    Ram[SP_address - 2] = Ram[SP_address] - 1
+
+                    f.write('@1\n')
+                    f.write('D=-A\n')
+                else:
+                    Ram[SP_address - 2] = 0
+
+                    f.write('@0\n')
+                    f.write('D=A\n')
+
+                f.write('@' + str(SP_address-2) + '\n')
+                f.write('M=D\n')
+
+                Ram[symboltable['SP']] = Ram[symboltable['SP']] - 1
+                f.write('@0\n')
+                f.write('M=M-1\n')
 
     def write_push_pop(self,dir_path,dirname,command,arg1,arg2):
         with open(dir_path + dirname +'.asm','a') as f:
