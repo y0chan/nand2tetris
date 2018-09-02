@@ -159,22 +159,23 @@ class CodeWriter(object):
     def write_arithmetric(self,dir_path,dirname,command,arg1,arg2):
         with open(dir_path + dirname + '.asm','a') as f:
             if command == 'add':
-                memory_address = Ram[symboltable['SP']] - 1 #stackの先頭は(SP-1)
-                asm_code = '@' + str(memory_address) +'\n'
+                memory_address_y = Ram[symboltable['SP']] - 1 #stackの先頭は(SP-1)
+                asm_code = '@' + str(memory_address_y) +'\n'
                 f.write(asm_code)
                 f.write('D=M\n')
 
-                memory_address -= 1
-                asm_code = '@' + str(memory_address) +'\n'
+                memory_address_x = Ram[symboltable['SP']] - 2
+                asm_code = '@' + str(memory_address_x) +'\n'
                 f.write(asm_code)
                 f.write('M=M+D\n')
 
                 # memory操作
-                Ram[symboltable['SP']] -= 1
-                memory_address = Ram[symboltable['SP']] - 1
-                Ram[memory_address] += Ram[memory_address + 1]
                 f.write('@0\n')
                 f.write('M=M-1\n')
+
+                Ram[symboltable['SP']] -= 1
+                Ram[memory_address_x] = int(Ram[memory_address_x]) + int(Ram[memory_address_y]) # Ramの要素がstrになっている。。
+                Ram[memory_address_x] = str(Ram[memory_address_x])
 
             if command == 'sub':
                 memory_address_y = Ram[symboltable['SP']] - 1 #yのアドレスは(SP-1)
@@ -203,6 +204,32 @@ class CodeWriter(object):
                 f.write(asm_code)
                 f.write('M=-M\n')
 
+                Ram[memory_address_y] = - int(Ram[memory_address_y])
+                Ram[memory_address_y] = str(Ram[memory_address_y])
+
+            if command == 'and':
+                memory_address_x = Ram[symboltable['SP']] - 2
+                memory_address_y = Ram[symboltable['SP']] - 1
+
+                x = Ram[memory_address_x]
+                y = Ram[memory_address_y]
+
+                # xとyが負数の場合の処理はどうすればよいだろう。。。
+                # andの計算
+                # pythonはバイナリにせずとも２進数の論理積がとれる
+                Ram[memory_address_x] = int(x) & int(y)
+                Ram[memory_address_x] = str(Ram[memory_address_x])
+                asm_code = '@' + Ram[memory_address_x] +'\n'
+                f.write(asm_code)
+                f.write('D=A\n')
+                asm_code = '@' + str(memory_address_x) +'\n'
+                f.write(asm_code)
+                f.write('M=D\n')
+
+                # SPの更新
+                Ram[symboltable['SP']] = Ram[symboltable['SP']] - 1
+                f.write('@0\n')
+                f.write('M=M-1\n')
 
             # eq lt と処理が同じなのでまとめられそう。違うのはif文だけ
             if command == 'eq':
