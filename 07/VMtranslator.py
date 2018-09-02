@@ -176,7 +176,28 @@ class CodeWriter(object):
                 f.write('@0\n')
                 f.write('M=M-1\n')
 
-            # eq lt と処理が同じなのでまとめられそう。違うのはif文だけ 
+            if command == 'sub':
+                memory_address_y = Ram[symboltable['SP']] - 1 #yのアドレスは(SP-1)
+                asm_code = '@' + str(memory_address_y) +'\n'
+                f.write(asm_code)
+                f.write('D=M\n')
+
+                memory_address_x = memory_address_y - 1 # xのアドレスは(SP - 2)
+                asm_code = '@' + str(memory_address_x) +'\n'
+                f.write(asm_code)
+                f.write('M=M-D\n')
+
+                f.write('@0\n')
+                f.write('M=M-1\n')
+
+                # Ramの操作
+                # xの更新
+                Ram[memory_address_x] = int(Ram[memory_address_x]) - int(Ram[memory_address_y]) # Ramの要素がstrになっている。。
+                Ram[memory_address_x] = str(Ram[memory_address_x])
+                # Ram[0]の更新
+                Ram[0] -= 1
+
+            # eq lt と処理が同じなのでまとめられそう。違うのはif文だけ
             if command == 'eq':
                 SP_address = Ram[symboltable['SP']]
 
