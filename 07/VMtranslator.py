@@ -361,6 +361,10 @@ class CodeWriter(object):
                     Ram[symboltable['SP']] = Ram[symboltable['SP']] + 1
                     f.write('@0\n')
                     f.write('M=M+1\n')
+                    # SPの値は本に記載されているようにbase + i番目とできればよかったかな?
+
+            if command == 'pop':
+
 
                     #print('-' * 10)
                     #print(Ram[0])
