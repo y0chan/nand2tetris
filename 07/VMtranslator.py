@@ -31,6 +31,9 @@ for i in range(0,16):
 # RAM
 Ram = [0 for w in range(32768)]
 # initial RAM setting
+# 初期値を設定する必要はある?
+# このメモリの操作はアセンブラで行っていないが、それもアセンブラにしたほうがよい。
+# popからはこれを修正した。
 Ram[symboltable['SP']] = 256
 
 '''class VMTranslator'''
@@ -364,15 +367,19 @@ class CodeWriter(object):
                     # SPの値は本に記載されているようにbase + i番目とできればよかったかな?
 
             if command == 'pop':
+                if arg1 == 'local':
+                    f.write('@0\n')
+                    f.write('D=M-1\n') # Dはyのaddress
+                    f.write('A=D\n')
+                    f.write('D=M\n') #Mはyの値
+                    #local_address = Ram[symboltable['LCL']] + int(arg2) #この計算はアセンブラでやるべき?
+                    #asm_code = '@' + str(local_address) + '\n'
+                    f.write('@1\n')
+                    f.write('A=M\n')
+                    f.write('M=M')
 
-
-                    #print('-' * 10)
-                    #print(Ram[0])
-                    #print(Ram[256])
-                    #print(Ram[257])
-                    #print(Ram[258])
-                    #print(Ram[259])
-
+                    #f.write(asm_code)
+                    f.write('M=D\n')
 
 '''main script start'''
 if __name__ == "__main__":
