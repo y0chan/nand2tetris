@@ -244,6 +244,8 @@ class CodeWriter(object):
                 # xとyが負数の場合の処理はどうすればよいだろう。。。
                 # andの計算
                 # pythonはバイナリにせずとも２進数の論理積がとれる
+                # そもそもD | A　やD & A の計算を利用してなくない？
+                # SP - 1 の呼び出しにはアセンブラを利用しなくてよいの?
                 Ram[memory_address_x] = int(x) | int(y)
                 Ram[memory_address_x] = str(Ram[memory_address_x])
                 asm_code = '@' + Ram[memory_address_x] +'\n'
@@ -283,6 +285,8 @@ class CodeWriter(object):
                 Ram[memory_address_y] = str(Ram[memory_address_y])
 
             # eq lt と処理が同じなのでまとめられそう。違うのはif文だけ
+            # JEQなどのjump命令を利用できないか??
+            # @0などしなくても@LCLを理解してくれる??
             if command == 'eq':
                 SP_address = Ram[symboltable['SP']]
 
@@ -368,18 +372,21 @@ class CodeWriter(object):
 
             if command == 'pop':
                 if arg1 == 'local':
-                    f.write('@0\n')
-                    f.write('D=M-1\n') # Dはyのaddress
-                    f.write('A=D\n')
-                    f.write('D=M\n') #Mはyの値
-                    #local_address = Ram[symboltable['LCL']] + int(arg2) #この計算はアセンブラでやるべき?
-                    #asm_code = '@' + str(local_address) + '\n'
-                    f.write('@1\n')
-                    f.write('A=M\n')
-                    f.write('M=M')
-
-                    #f.write(asm_code)
+                    asm_code = '@' + str(arg2) + '\n'
+                    f.write(asm_code)
+                    f.write('D=A\n')
+                    f.write('@LCL\n')
+                    f.write('D=D+M\n')
+                    f.write('@R5\n')
                     f.write('M=D\n')
+                    f.write('@SP\n')
+                    f.write('A=M-1\n')
+                    f.write('D=M\n')
+                    f.write('@R5\n')
+                    f.write('A=M\n')
+                    f.write('M=D\n')
+                    f.write('@SP\n')
+                    f.write('M=M-1\n')
 
 '''main script start'''
 if __name__ == "__main__":
