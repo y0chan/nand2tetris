@@ -152,33 +152,16 @@ class CodeWriter(object):
         with open(dir_path + dirname + '.asm','w') as f:
             print(dir_path + dirname + '.asm file created.')
 
-            # RAM[0] = 256の設定
-            #f.write('@256\n')
-            #f.write('D=A\n')
-            #memory_address = symboltable['SP']
-            #f.write('@'+str(memory_address)+'\n')
-            #f.write('M=D\n')
-
     def write_arithmetric(self,dir_path,dirname,command,arg1,arg2):
         with open(dir_path + dirname + '.asm','a') as f:
             if command == 'add':
-                memory_address_y = Ram[symboltable['SP']] - 1 #stackの先頭は(SP-1)
-                asm_code = '@' + str(memory_address_y) +'\n'
-                f.write(asm_code)
-                f.write('D=M\n')
-
-                memory_address_x = Ram[symboltable['SP']] - 2
-                asm_code = '@' + str(memory_address_x) +'\n'
-                f.write(asm_code)
-                f.write('M=M+D\n')
-
-                # memory操作
-                f.write('@0\n')
-                f.write('M=M-1\n')
-
-                Ram[symboltable['SP']] -= 1
-                Ram[memory_address_x] = int(Ram[memory_address_x]) + int(Ram[memory_address_y]) # Ramの要素がstrになっている。。
-                Ram[memory_address_x] = str(Ram[memory_address_x])
+                f.write('@SP\n')
+                f.write('A=M-1\n')
+                f.write('D=M\n') # D=y
+                f.write('A=A-1\n')
+                f.write('M=D+M\n')
+                # SPの更新
+                self.write_SP_minus(f)
 
             if command == 'sub':
                 memory_address_y = Ram[symboltable['SP']] - 1 #yのアドレスは(SP-1)
@@ -285,8 +268,6 @@ class CodeWriter(object):
                 Ram[memory_address_y] = str(Ram[memory_address_y])
 
             # eq lt と処理が同じなのでまとめられそう。違うのはif文だけ
-            # JEQなどのjump命令を利用できないか??
-            # @0などしなくても@LCLを理解してくれる??
             if command == 'eq':
                 SP_address = Ram[symboltable['SP']]
 
@@ -362,7 +343,6 @@ class CodeWriter(object):
                     f.write('@SP\n')
                     f.write('A=M\n')
                     f.write('M=D\n')
-
                     # SPの更新
                     self.write_SP_plus(f)
 
@@ -381,8 +361,8 @@ class CodeWriter(object):
                     f.write('@R5\n')
                     f.write('A=M\n')
                     f.write('M=D\n')
-                    f.write('@SP\n')
-                    f.write('M=M-1\n')
+                    # SPの更新
+                    self.write_SP_minus(f)
 
     def write_SP_plus(self,f):
             f.write('@SP\n')
@@ -391,7 +371,6 @@ class CodeWriter(object):
     def write_SP_minus(self,f):
             f.write('@SP\n')
             f.write('M=M-1\n')
-
 
 '''main script start'''
 if __name__ == "__main__":
