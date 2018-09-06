@@ -153,11 +153,11 @@ class CodeWriter(object):
             print(dir_path + dirname + '.asm file created.')
 
             # RAM[0] = 256の設定
-            f.write('@256\n')
-            f.write('D=A\n')
-            memory_address = symboltable['SP']
-            f.write('@'+str(memory_address)+'\n')
-            f.write('M=D\n')
+            #f.write('@256\n')
+            #f.write('D=A\n')
+            #memory_address = symboltable['SP']
+            #f.write('@'+str(memory_address)+'\n')
+            #f.write('M=D\n')
 
     def write_arithmetric(self,dir_path,dirname,command,arg1,arg2):
         with open(dir_path + dirname + '.asm','a') as f:
@@ -356,19 +356,15 @@ class CodeWriter(object):
         with open(dir_path + dirname +'.asm','a') as f:
             if command == 'push':
                 if arg1 == 'constant':
-                    # memory操作
+                    #yにarg2をpush
                     f.write('@'+str(arg2)+'\n')
                     f.write('D=A\n')
-                    memory_address = Ram[symboltable['SP']]
-                    f.write('@'+str(memory_address)+'\n')
+                    f.write('@SP\n')
+                    f.write('A=M\n')
                     f.write('M=D\n')
-                    Ram[memory_address] = arg2
 
                     # SPの更新
-                    Ram[symboltable['SP']] = Ram[symboltable['SP']] + 1
-                    f.write('@0\n')
-                    f.write('M=M+1\n')
-                    # SPの値は本に記載されているようにbase + i番目とできればよかったかな?
+                    self.write_SP_plus(f)
 
             if command == 'pop':
                 if arg1 == 'local':
@@ -387,6 +383,15 @@ class CodeWriter(object):
                     f.write('M=D\n')
                     f.write('@SP\n')
                     f.write('M=M-1\n')
+
+    def write_SP_plus(self,f):
+            f.write('@SP\n')
+            f.write('M=M+1\n')
+
+    def write_SP_minus(self,f):
+            f.write('@SP\n')
+            f.write('M=M-1\n')
+
 
 '''main script start'''
 if __name__ == "__main__":
