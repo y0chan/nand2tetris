@@ -269,25 +269,27 @@ class CodeWriter(object):
 
             # eq lt と処理が同じなのでまとめられそう。違うのはif文だけ
             if command == 'eq':
-                SP_address = Ram[symboltable['SP']]
-
-                if Ram[SP_address - 2] == Ram[SP_address -1]:
-                    Ram[SP_address - 2] = Ram[SP_address] - 1
-
-                    f.write('@1\n')
-                    f.write('D=-A\n')
-                else:
-                    Ram[SP_address - 2] = 0
-
-                    f.write('@0\n')
-                    f.write('D=A\n')
-
-                f.write('@' + str(SP_address-2) + '\n')
-                f.write('M=D\n')
-
-                Ram[symboltable['SP']] = Ram[symboltable['SP']] - 1
-                f.write('@0\n')
-                f.write('M=M-1\n')
+                f.write('@SP\n')
+                f.write('A=M-1\n')
+                f.write('D=M\n')
+                f.write('A=A-1\n')
+                f.write('D=M-D\n')
+                f.write('@J_TRUE\n')
+                f.write('D;JEQ\n')
+                f.write('@SP\n') #x≠yの処理
+                f.write('A=M-1\n')
+                f.write('M=0\n')
+                f.write('@END\n') #ENDへ
+                f.write('0;JMP\n')
+                f.write('(J_TRUE)\n') #x=yの処理
+                f.write('@SP\n')
+                f.write('A=M-1\n')
+                f.write('A=A-1\n')
+                f.write('M=-1\n')
+                f.write('@END\n') #ENDへ
+                f.write('0;JMP\n')
+                f.write('(END)\n')
+                self.write_SP_minus(f) #SPの更新
 
             # eq lt と処理が同じなのでまとめられそう。違うのはif文だけ
             if command == 'lt':
