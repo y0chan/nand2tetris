@@ -135,6 +135,7 @@ class CodeWriter(object):
     def write_arithmetric(self,dir_path,dirname,command,arg1,arg2):
 
         with open(dir_path + dirname + '.asm','a') as f:
+            # subと処理はほとんど同じ
             if command == 'add':
                 f.write('@SP\n')
                 f.write('A=M-1\n')
@@ -144,9 +145,20 @@ class CodeWriter(object):
                 # SPの更新
                 self.write_SP_minus(f)
 
-            #if command == 'sub':
+            if command == 'sub':
+                f.write('@SP\n')
+                f.write('A=M-1\n')
+                f.write('D=M\n') # D=y
+                f.write('A=A-1\n')
+                f.write('M=D-M\n') #addと処置がちがうところ
+                # SPの更新
+                self.write_SP_minus(f)
 
-            #if command == 'neg':
+            #間違ってるので書き直し
+            if command == 'neg':
+                f.write('@SP\n')
+                f.write('A=M-1\n')
+                f.write('D=-M\n') # y=-y
 
             #if command == 'and':
 
@@ -192,14 +204,14 @@ class CodeWriter(object):
                 f.write('A=A-1\n')
                 f.write('D=M-D\n')
                 f.write('@J_TRUE{}\n'.format(self.lavel_count))
-                f.write('D;JLT\n')
+                f.write('D;JLT\n') #eqとltと処理が違うのはここ
                 f.write('@SP\n') #x≠yの処理
                 f.write('A=M-1\n')
                 f.write('A=A-1\n')
                 f.write('M=0\n')
                 f.write('@END{}\n'.format(self.lavel_count)) #ENDへ
                 f.write('0;JMP\n')
-                f.write('(J_TRUE.{})\n'.format(self.lavel_count)) #x=yの処理
+                f.write('(J_TRUE{})\n'.format(self.lavel_count)) #x=yの処理
                 f.write('@SP\n')
                 f.write('A=M-1\n')
                 f.write('A=A-1\n')
@@ -212,7 +224,31 @@ class CodeWriter(object):
                 self.lavel_count += 1
 
             # eq lt と処理が同じなのでまとめられそう。違うのはif文だけ
-            #if command == 'gt':
+            if command == 'gt':
+                f.write('@SP\n')
+                f.write('A=M-1\n')
+                f.write('D=M\n')
+                f.write('A=A-1\n')
+                f.write('D=M-D\n')
+                f.write('@J_TRUE{}\n'.format(self.lavel_count))
+                f.write('D;JGT\n') #eqとltと処理が違うのはここ
+                f.write('@SP\n') #x≠yの処理
+                f.write('A=M-1\n')
+                f.write('A=A-1\n')
+                f.write('M=0\n')
+                f.write('@END{}\n'.format(self.lavel_count)) #ENDへ
+                f.write('0;JMP\n')
+                f.write('(J_TRUE{})\n'.format(self.lavel_count)) #x=yの処理
+                f.write('@SP\n')
+                f.write('A=M-1\n')
+                f.write('A=A-1\n')
+                f.write('M=-1\n')
+                f.write('@END{}\n'.format(self.lavel_count)) #ENDへ
+                f.write('0;JMP\n')
+                f.write('(END{})\n'.format(self.lavel_count))
+                self.write_SP_minus(f) #SPの更新
+
+                self.lavel_count += 1
 
     def write_push_pop(self,dir_path,dirname,command,arg1,arg2):
         with open(dir_path + dirname +'.asm','a') as f:
