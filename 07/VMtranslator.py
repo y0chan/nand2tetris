@@ -280,11 +280,60 @@ class CodeWriter(object):
                     self.write_SP_plus(f)
 
             if command == 'pop':
+                # local argument this thatはラベルが違うだけなのでもっとまとめられそう
                 if arg1 == 'local':
-                    asm_code = '@' + str(arg2) + '\n'
-                    f.write(asm_code)
+                    f.write('@'+str(arg2)+'\n')
                     f.write('D=A\n')
                     f.write('@LCL\n')
+                    f.write('D=D+M\n')
+                    f.write('@R5\n')
+                    f.write('M=D\n')
+                    f.write('@SP\n')
+                    f.write('A=M-1\n')
+                    f.write('D=M\n')
+                    f.write('@R5\n')
+                    f.write('A=M\n')
+                    f.write('M=D\n')
+                    # SPの更新
+                    self.write_SP_minus(f)
+
+                # localとラベルが違うだけ。もっと短くコードができそう。
+                if arg1 == 'argument':
+                    f.write('@'+str(arg2)+'\n')
+                    f.write('D=A\n')
+                    f.write('@ARG\n')
+                    f.write('D=D+M\n')
+                    f.write('@R5\n')
+                    f.write('M=D\n')
+                    f.write('@SP\n')
+                    f.write('A=M-1\n')
+                    f.write('D=M\n')
+                    f.write('@R5\n')
+                    f.write('A=M\n')
+                    f.write('M=D\n')
+                    # SPの更新
+                    self.write_SP_minus(f)
+
+                if arg1 == 'this':
+                    f.write('@'+str(arg2)+'\n')
+                    f.write('D=A\n')
+                    f.write('@THIS\n')
+                    f.write('D=D+M\n')
+                    f.write('@R5\n')
+                    f.write('M=D\n')
+                    f.write('@SP\n')
+                    f.write('A=M-1\n')
+                    f.write('D=M\n')
+                    f.write('@R5\n')
+                    f.write('A=M\n')
+                    f.write('M=D\n')
+                    # SPの更新
+                    self.write_SP_minus(f)
+
+                if arg1 == 'that':
+                    f.write('@'+str(arg2)+'\n')
+                    f.write('D=A\n')
+                    f.write('@THAT\n')
                     f.write('D=D+M\n')
                     f.write('@R5\n')
                     f.write('M=D\n')
