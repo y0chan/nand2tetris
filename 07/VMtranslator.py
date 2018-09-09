@@ -150,7 +150,7 @@ class CodeWriter(object):
                 f.write('A=M-1\n')
                 f.write('D=M\n') # D=y
                 f.write('A=A-1\n')
-                f.write('M=D-M\n') #addと処置がちがうところ
+                f.write('M=M-D\n') #addと処置がちがうところ
                 # SPの更新
                 self.write_SP_minus(f)
 
@@ -158,9 +158,11 @@ class CodeWriter(object):
             if command == 'neg':
                 f.write('@SP\n')
                 f.write('A=M-1\n')
-                f.write('D=-M\n') # y=-y
+                f.write('M=-M\n') # y=-y
 
             #if command == 'and':
+
+
 
             #if command == 'or':
 
