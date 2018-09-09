@@ -160,14 +160,28 @@ class CodeWriter(object):
                 f.write('A=M-1\n')
                 f.write('M=-M\n') # y=-y
 
-            #if command == 'and':
+            if command == 'and':
+                f.write('@SP\n')
+                f.write('A=M-1\n')
+                f.write('D=M\n') # D=y
+                f.write('A=A-1\n')
+                f.write('M=D&M\n')
+                # SPの更新
+                self.write_SP_minus(f)
 
+            if command == 'or':
+                f.write('@SP\n')
+                f.write('A=M-1\n')
+                f.write('D=M\n') # D=y
+                f.write('A=A-1\n')
+                f.write('M=D|M\n')
+                # SPの更新
+                self.write_SP_minus(f)
 
-
-            #if command == 'or':
-
-            #if command == 'not':
-
+            if command == 'not':
+                f.write('@SP\n')
+                f.write('A=M-1\n')
+                f.write('M=!M\n')
 
             # eq lt と処理が同じなのでまとめられそう。
             # lavelが同じになってしまう問題がある
