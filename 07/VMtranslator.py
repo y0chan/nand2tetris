@@ -13,29 +13,6 @@ from sys import argv
 import os
 import re
 
-'''Initial Setting'''
-# lavel:RAM Address
-symboltable = {
-            'SP':0,
-            'LCL':1,
-            'ARG':2,
-            'THIS':3,
-            'THAT':4,
-            'SCREEN':16384,
-            'KBD':24576
-            }
-for i in range(0,16):
-    key = 'R' + str(i)
-    symboltable[key] = i
-
-# RAM
-Ram = [0 for w in range(32768)]
-# initial RAM setting
-# 初期値を設定する必要はある?
-# このメモリの操作はアセンブラで行っていないが、それもアセンブラにしたほうがよい。
-# popからはこれを修正した。
-Ram[symboltable['SP']] = 256
-
 '''class VMTranslator'''
 class VMTranslator(object):
     def __init__(self,dir_path):
@@ -143,6 +120,9 @@ class Parser(object):
 
 '''class CodeWriter'''
 class CodeWriter(object):
+
+    lavel_count = 0
+
     def __init__(self):
         pass
 
@@ -153,6 +133,7 @@ class CodeWriter(object):
             print(dir_path + dirname + '.asm file created.')
 
     def write_arithmetric(self,dir_path,dirname,command,arg1,arg2):
+
         with open(dir_path + dirname + '.asm','a') as f:
             if command == 'add':
                 f.write('@SP\n')
@@ -163,179 +144,75 @@ class CodeWriter(object):
                 # SPの更新
                 self.write_SP_minus(f)
 
-            if command == 'sub':
-                memory_address_y = Ram[symboltable['SP']] - 1 #yのアドレスは(SP-1)
-                asm_code = '@' + str(memory_address_y) +'\n'
-                f.write(asm_code)
-                f.write('D=M\n')
+            #if command == 'sub':
 
-                memory_address_x = memory_address_y - 1 # xのアドレスは(SP - 2)
-                asm_code = '@' + str(memory_address_x) +'\n'
-                f.write(asm_code)
-                f.write('M=M-D\n')
+            #if command == 'neg':
 
-                f.write('@0\n')
-                f.write('M=M-1\n')
+            #if command == 'and':
 
-                # Ramの操作
-                # xの更新
-                Ram[memory_address_x] = int(Ram[memory_address_x]) - int(Ram[memory_address_y]) # Ramの要素がstrになっている。。
-                Ram[memory_address_x] = str(Ram[memory_address_x])
-                # Ram[0]の更新
-                Ram[0] -= 1
+            #if command == 'or':
 
-            if command == 'neg':
-                memory_address_y = Ram[symboltable['SP']] - 1 #yのアドレスは(SP-1)
-                asm_code = '@' + str(memory_address_y) +'\n'
-                f.write(asm_code)
-                f.write('M=-M\n')
+            #if command == 'not':
 
-                Ram[memory_address_y] = - int(Ram[memory_address_y])
-                Ram[memory_address_y] = str(Ram[memory_address_y])
 
-            if command == 'and':
-                memory_address_x = Ram[symboltable['SP']] - 2
-                memory_address_y = Ram[symboltable['SP']] - 1
-
-                x = Ram[memory_address_x]
-                y = Ram[memory_address_y]
-
-                # xとyが負数の場合の処理はどうすればよいだろう。。。
-                # andの計算
-                # pythonはバイナリにせずとも２進数の論理積がとれる
-                Ram[memory_address_x] = int(x) & int(y)
-                Ram[memory_address_x] = str(Ram[memory_address_x])
-                asm_code = '@' + Ram[memory_address_x] +'\n'
-                f.write(asm_code)
-                f.write('D=A\n')
-                asm_code = '@' + str(memory_address_x) +'\n'
-                f.write(asm_code)
-                f.write('M=D\n')
-
-                # SPの更新
-                Ram[symboltable['SP']] = Ram[symboltable['SP']] - 1
-                f.write('@0\n')
-                f.write('M=M-1\n')
-
-            if command == 'or':
-                memory_address_x = Ram[symboltable['SP']] - 2
-                memory_address_y = Ram[symboltable['SP']] - 1
-
-                x = Ram[memory_address_x]
-                y = Ram[memory_address_y]
-
-                # xとyが負数の場合の処理はどうすればよいだろう。。。
-                # andの計算
-                # pythonはバイナリにせずとも２進数の論理積がとれる
-                # そもそもD | A　やD & A の計算を利用してなくない？
-                # SP - 1 の呼び出しにはアセンブラを利用しなくてよいの?
-                Ram[memory_address_x] = int(x) | int(y)
-                Ram[memory_address_x] = str(Ram[memory_address_x])
-                asm_code = '@' + Ram[memory_address_x] +'\n'
-                f.write(asm_code)
-                f.write('D=A\n')
-                asm_code = '@' + str(memory_address_x) +'\n'
-                f.write(asm_code)
-                f.write('M=D\n')
-
-                # SPの更新
-                Ram[symboltable['SP']] = Ram[symboltable['SP']] - 1
-                f.write('@0\n')
-                f.write('M=M-1\n')
-
-            if command == 'not':
-                memory_address_y = Ram[symboltable['SP']] - 1 #yのアドレスは(SP-1)
-                D_tmp = ~int(Ram[memory_address_y]) #~で反転するやつ
-                #もっときれいにかけるかも。
-                if D_tmp >= 0:
-                    asm_code = '@' + str(D_tmp) +'\n'
-                    f.write(asm_code)
-                    f.write('D=A\n')
-                else:
-                    asm_code = '@' + str(-D_tmp) +'\n'
-                    f.write(asm_code)
-                    f.write('D=-A\n')
-
-                asm_code = '@' + str(memory_address_y) +'\n'
-                f.write(asm_code)
-                f.write('M=D\n')
-
-                asm_code = '@' + str(memory_address_y) +'\n'
-                f.write(asm_code)
-                f.write('M=D\n')
-
-                Ram[memory_address_y] = D_tmp
-                Ram[memory_address_y] = str(Ram[memory_address_y])
-
-            # eq lt と処理が同じなのでまとめられそう。違うのはif文だけ
+            # eq lt と処理が同じなのでまとめられそう。
+            # lavelが同じになってしまう問題がある
+            # eqが２つあったりするとあかん
             if command == 'eq':
                 f.write('@SP\n')
                 f.write('A=M-1\n')
                 f.write('D=M\n')
                 f.write('A=A-1\n')
                 f.write('D=M-D\n')
-                f.write('@J_TRUE\n')
+                f.write('@J_TRUE{}\n'.format(self.lavel_count))
                 f.write('D;JEQ\n')
                 f.write('@SP\n') #x≠yの処理
                 f.write('A=M-1\n')
+                f.write('A=A-1\n')
                 f.write('M=0\n')
-                f.write('@END\n') #ENDへ
+                f.write('@END{}\n'.format(self.lavel_count)) #ENDへ
                 f.write('0;JMP\n')
-                f.write('(J_TRUE)\n') #x=yの処理
+                f.write('(J_TRUE{})\n'.format(self.lavel_count)) #x=yの処理
                 f.write('@SP\n')
                 f.write('A=M-1\n')
                 f.write('A=A-1\n')
                 f.write('M=-1\n')
-                f.write('@END\n') #ENDへ
+                f.write('@END{}\n'.format(self.lavel_count)) #ENDへ
                 f.write('0;JMP\n')
-                f.write('(END)\n')
+                f.write('(END{})\n'.format(self.lavel_count))
                 self.write_SP_minus(f) #SPの更新
 
-            # eq lt と処理が同じなのでまとめられそう。違うのはif文だけ
+                self.lavel_count += 1
+
+            # eq lt と処理が同じなのでまとめられそう。
             if command == 'lt':
                 f.write('@SP\n')
                 f.write('A=M-1\n')
                 f.write('D=M\n')
                 f.write('A=A-1\n')
                 f.write('D=M-D\n')
-                f.write('@J_TRUE\n')
+                f.write('@J_TRUE{}\n'.format(self.lavel_count))
                 f.write('D;JLT\n')
                 f.write('@SP\n') #x≠yの処理
                 f.write('A=M-1\n')
+                f.write('A=A-1\n')
                 f.write('M=0\n')
-                f.write('@END\n') #ENDへ
+                f.write('@END{}\n'.format(self.lavel_count)) #ENDへ
                 f.write('0;JMP\n')
-                f.write('(J_TRUE)\n') #x=yの処理
+                f.write('(J_TRUE.{})\n'.format(self.lavel_count)) #x=yの処理
                 f.write('@SP\n')
                 f.write('A=M-1\n')
                 f.write('A=A-1\n')
                 f.write('M=-1\n')
-                f.write('@END\n') #ENDへ
+                f.write('@END{}\n'.format(self.lavel_count)) #ENDへ
                 f.write('0;JMP\n')
-                f.write('(END)\n')
+                f.write('(END{})\n'.format(self.lavel_count))
                 self.write_SP_minus(f) #SPの更新
 
+                self.lavel_count += 1
+
             # eq lt と処理が同じなのでまとめられそう。違うのはif文だけ
-            if command == 'gt':
-                SP_address = Ram[symboltable['SP']]
-
-                if Ram[SP_address - 2] > Ram[SP_address -1]:
-                    Ram[SP_address - 2] = Ram[SP_address] - 1
-
-                    f.write('@1\n')
-                    f.write('D=-A\n')
-                else:
-                    Ram[SP_address - 2] = 0
-
-                    f.write('@0\n')
-                    f.write('D=A\n')
-
-                f.write('@' + str(SP_address-2) + '\n')
-                f.write('M=D\n')
-
-                Ram[symboltable['SP']] = Ram[symboltable['SP']] - 1
-                f.write('@0\n')
-                f.write('M=M-1\n')
+            #if command == 'gt':
 
     def write_push_pop(self,dir_path,dirname,command,arg1,arg2):
         with open(dir_path + dirname +'.asm','a') as f:
