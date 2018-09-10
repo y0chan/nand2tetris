@@ -279,6 +279,62 @@ class CodeWriter(object):
                     # SPの更新
                     self.write_SP_plus(f)
 
+                # local argument this thatはラベルが違うだけなのでもっとまとめられそう
+                if arg1 == 'local':
+                    f.write('@'+str(arg2)+'\n')
+                    f.write('D=A\n')
+                    f.write('@LCL\n')
+                    f.write('A=D+M\n') # A = LCL_base + arg2
+                    f.write('D=A\n') # D = Ram[LCL_base + arg2]
+                    f.write('@SP\n')
+                    f.write('M=D\n')
+                    # SPの更新
+                    self.write_SP_plus(f)
+
+                if arg1 == 'argument':
+                    f.write('@'+str(arg2)+'\n')
+                    f.write('D=A\n')
+                    f.write('@ARG\n')
+                    f.write('A=D+M\n') # A = ARG_base + arg2
+                    f.write('D=A\n') # D = Ram[ARG_base + arg2]
+                    f.write('@SP\n')
+                    f.write('M=D\n')
+                    # SPの更新
+                    self.write_SP_plus(f)
+
+                if arg1 == 'this':
+                    f.write('@'+str(arg2)+'\n')
+                    f.write('D=A\n')
+                    f.write('@THIS\n')
+                    f.write('A=D+M\n') # A = ARG_base + arg2
+                    f.write('D=A\n') # D = Ram[ARG_base + arg2]
+                    f.write('@SP\n')
+                    f.write('M=D\n')
+                    # SPの更新
+                    self.write_SP_plus(f)
+
+                if arg1 == 'that':
+                    f.write('@'+str(arg2)+'\n')
+                    f.write('D=A\n')
+                    f.write('@THAT\n')
+                    f.write('A=D+M\n') # A = THAT_base + arg2
+                    f.write('D=A\n') # D = Ram[THAT_base + arg2]
+                    f.write('@SP\n')
+                    f.write('M=D\n')
+                    # SPの更新
+                    self.write_SP_plus(f)
+
+                if arg2 == 'temp':
+                    f.write('@'+str(arg2)+'\n')
+                    f.write('D=A\n')
+                    f.write('@5\n') #R5?
+                    f.write('A=D+A\n') # A = 5 + arg2
+                    f.write('D=A\n') # D = Ram[5 + arg2]
+                    f.write('@SP\n')
+                    f.write('M=D\n')
+                    # SPの更新
+                    self.write_SP_plus(f)
+
             if command == 'pop':
                 # local argument this thatはラベルが違うだけなのでもっとまとめられそう
                 if arg1 == 'local':
@@ -286,8 +342,8 @@ class CodeWriter(object):
                     f.write('D=A\n')
                     f.write('@LCL\n')
                     f.write('D=D+M\n')
-                    f.write('@R5\n')
-                    f.write('M=D\n')
+                    f.write('@R5\n') # 後のtempに支障をきたさない？
+                    f.write('M=D\n') #R[5] = LCL_base + arg2
                     f.write('@SP\n')
                     f.write('A=M-1\n')
                     f.write('D=M\n')
@@ -335,6 +391,22 @@ class CodeWriter(object):
                     f.write('D=A\n')
                     f.write('@THAT\n')
                     f.write('D=D+M\n')
+                    f.write('@R5\n')
+                    f.write('M=D\n')
+                    f.write('@SP\n')
+                    f.write('A=M-1\n')
+                    f.write('D=M\n')
+                    f.write('@R5\n')
+                    f.write('A=M\n')
+                    f.write('M=D\n')
+                    # SPの更新
+                    self.write_SP_minus(f)
+
+                if arg1 == 'temp':
+                    f.write('@'+str(arg2)+'\n')
+                    f.write('D=A\n')
+                    f.write('@5\n') #R5?
+                    f.write('D=D+A\n') #ここthatと違う
                     f.write('@R5\n')
                     f.write('M=D\n')
                     f.write('@SP\n')
