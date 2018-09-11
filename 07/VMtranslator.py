@@ -296,7 +296,7 @@ class CodeWriter(object):
                     f.write('D=A\n')
                     f.write('@ARG\n')
                     f.write('A=D+M\n') # A = ARG_base + arg2
-                    f.write('D=A\n') # D = Ram[ARG_base + arg2]
+                    f.write('D=M\n') # D = Ram[ARG_base + arg2]
                     f.write('@SP\n')
                     f.write('M=D\n')
                     # SPの更新
@@ -307,7 +307,7 @@ class CodeWriter(object):
                     f.write('D=A\n')
                     f.write('@THIS\n')
                     f.write('A=D+M\n') # A = ARG_base + arg2
-                    f.write('D=A\n') # D = Ram[ARG_base + arg2]
+                    f.write('D=M\n') # D = Ram[ARG_base + arg2]
                     f.write('@SP\n')
                     f.write('M=D\n')
                     # SPの更新
@@ -318,7 +318,7 @@ class CodeWriter(object):
                     f.write('D=A\n')
                     f.write('@THAT\n')
                     f.write('A=D+M\n') # A = THAT_base + arg2
-                    f.write('D=A\n') # D = Ram[THAT_base + arg2]
+                    f.write('D=M\n') # D = Ram[THAT_base + arg2]
                     f.write('@SP\n')
                     f.write('M=D\n')
                     # SPの更新
@@ -329,7 +329,7 @@ class CodeWriter(object):
                     f.write('D=A\n')
                     f.write('@5\n') #R5?
                     f.write('A=D+A\n') # A = 5 + arg2
-                    f.write('D=A\n') # D = Ram[5 + arg2]
+                    f.write('D=M\n') # D = Ram[5 + arg2]
                     f.write('@SP\n')
                     f.write('M=D\n')
                     # SPの更新
@@ -360,10 +360,10 @@ class CodeWriter(object):
                     f.write('@ARG\n')
                     f.write('D=D+M\n')
                     f.write('@R5\n')
-                    f.write('M=D\n')
+                    f.write('M=D\n') #Ram[5] = base_arg + arg2
                     f.write('@SP\n')
                     f.write('A=M-1\n')
-                    f.write('D=M\n')
+                    f.write('D=M\n') #D = stack top value
                     f.write('@R5\n')
                     f.write('A=M\n')
                     f.write('M=D\n')
