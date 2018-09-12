@@ -285,8 +285,9 @@ class CodeWriter(object):
                     f.write('D=A\n')
                     f.write('@LCL\n')
                     f.write('A=D+M\n') # A = LCL_base + arg2
-                    f.write('D=A\n') # D = Ram[LCL_base + arg2]
+                    f.write('D=M\n') # D = Ram[LCL_base + arg2]
                     f.write('@SP\n')
+                    f.write('A=M\n')
                     f.write('M=D\n')
                     # SPの更新
                     self.write_SP_plus(f)
@@ -298,6 +299,7 @@ class CodeWriter(object):
                     f.write('A=D+M\n') # A = ARG_base + arg2
                     f.write('D=M\n') # D = Ram[ARG_base + arg2]
                     f.write('@SP\n')
+                    f.write('A=M\n')
                     f.write('M=D\n')
                     # SPの更新
                     self.write_SP_plus(f)
@@ -309,6 +311,7 @@ class CodeWriter(object):
                     f.write('A=D+M\n') # A = ARG_base + arg2
                     f.write('D=M\n') # D = Ram[ARG_base + arg2]
                     f.write('@SP\n')
+                    f.write('A=M\n')
                     f.write('M=D\n')
                     # SPの更新
                     self.write_SP_plus(f)
@@ -320,6 +323,7 @@ class CodeWriter(object):
                     f.write('A=D+M\n') # A = THAT_base + arg2
                     f.write('D=M\n') # D = Ram[THAT_base + arg2]
                     f.write('@SP\n')
+                    f.write('A=M\n')
                     f.write('M=D\n')
                     # SPの更新
                     self.write_SP_plus(f)
@@ -331,6 +335,7 @@ class CodeWriter(object):
                     f.write('A=D+A\n') # A = 5 + arg2
                     f.write('D=M\n') # D = Ram[5 + arg2]
                     f.write('@SP\n')
+                    f.write('A=M\n')
                     f.write('M=D\n')
                     # SPの更新
                     self.write_SP_plus(f)
