@@ -353,6 +353,18 @@ class CodeWriter(object):
                     # SPの更新
                     self.write_SP_plus(f)
 
+                if arg1 == 'static':
+                    f.write('@'+str(arg2)+'\n')
+                    f.write('D=A\n')
+                    f.write('@16\n')
+                    f.write('A=D+A\n') # A = 16 + arg2
+                    f.write('D=M\n') # D = Ram[16 + arg2]
+                    f.write('@SP\n')
+                    f.write('A=M\n')
+                    f.write('M=D\n')
+                    # SPの更新
+                    self.write_SP_plus(f)
+
             if command == 'pop':
                 # local argument this thatはラベルが違うだけなのでもっとまとめられそう
                 if arg1 == 'local':
@@ -440,6 +452,22 @@ class CodeWriter(object):
                     f.write('@'+str(arg2)+'\n')
                     f.write('D=A\n')
                     f.write('@3\n') #R3?
+                    f.write('D=D+A\n') #ここthatと違う
+                    f.write('@R5\n')
+                    f.write('M=D\n')
+                    f.write('@SP\n')
+                    f.write('A=M-1\n')
+                    f.write('D=M\n')
+                    f.write('@R5\n')
+                    f.write('A=M\n')
+                    f.write('M=D\n')
+                    # SPの更新
+                    self.write_SP_minus(f)
+
+                if arg1 == 'static':
+                    f.write('@'+str(arg2)+'\n')
+                    f.write('D=A\n')
+                    f.write('@16\n')
                     f.write('D=D+A\n') #ここthatと違う
                     f.write('@R5\n')
                     f.write('M=D\n')
