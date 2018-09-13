@@ -316,6 +316,7 @@ class CodeWriter(object):
                     # SPの更新
                     self.write_SP_plus(f)
 
+
                 if arg1 == 'that':
                     f.write('@'+str(arg2)+'\n')
                     f.write('D=A\n')
@@ -328,7 +329,7 @@ class CodeWriter(object):
                     # SPの更新
                     self.write_SP_plus(f)
 
-                if arg2 == 'temp':
+                if arg1 == 'temp':
                     f.write('@'+str(arg2)+'\n')
                     f.write('D=A\n')
                     f.write('@5\n') #R5?
