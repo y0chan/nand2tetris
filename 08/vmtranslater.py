@@ -10,6 +10,9 @@ Usage:
     python 3.6 VMtransfer.py [Directory including .vm file]
 '''
 
+class VMtransfer:
+    pass
+
 
 '''main script start'''
 if __name__ == "__main__":
