@@ -505,6 +505,8 @@ class CodeWriter(object):
             f.write('@SP\n')
             f.write('A=M-1\n')
             f.write('D=M\n')
+            # SPの更新
+            self.write_SP_minus(f)
             f.write('@' + arg1 + '\n')
             f.write('D;JNE\n')
 
