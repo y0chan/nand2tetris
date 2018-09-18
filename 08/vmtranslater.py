@@ -501,7 +501,8 @@ class CodeWriter(object):
 
     def write_goto(self,dir_path,dirname,command,arg1,arg2):
         with open(dir_path + dirname +'.asm','a') as f:
-            f.write('test\n')
+            f.write('@' + arg1 + '\n')
+            f.write('0;JMP\n')
 
     def write_if(self,dir_path,dirname,command,arg1,arg2):
         with open(dir_path + dirname +'.asm','a') as f:
