@@ -52,6 +52,9 @@ class VMTranslator(object):
                             self.codewriter.write_label(dir_path,dirname,command,arg1,arg2)
                         if command == 'if-goto':
                             self.codewriter.write_if(dir_path,dirname,command,arg1,arg2)
+                        if command == 'goto':
+                            self.codewriter.write_goto(dir_path,dirname,command,arg1,arg2)
+
 
     def get_argdirname(self,dir_path):
         tmp_array = dir_path.split('/')
@@ -497,8 +500,8 @@ class CodeWriter(object):
             f.write('('+ arg1 +')\n')
 
     def write_goto(self,dir_path,dirname,command,arg1,arg2):
-        #with open(dir_path + dirname +'.asm','a') as f:
-        pass
+        with open(dir_path + dirname +'.asm','a') as f:
+            f.write('test\n')
 
     def write_if(self,dir_path,dirname,command,arg1,arg2):
         with open(dir_path + dirname +'.asm','a') as f:
@@ -509,7 +512,6 @@ class CodeWriter(object):
             self.write_SP_minus(f)
             f.write('@' + arg1 + '\n')
             f.write('D;JNE\n')
-
 
 '''main script start'''
 if __name__ == "__main__":
