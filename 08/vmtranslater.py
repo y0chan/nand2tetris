@@ -514,6 +514,10 @@ class CodeWriter(object):
             f.write('@' + arg1 + '\n')
             f.write('D;JNE\n')
 
+    def write_function(self,dir_path,dirname,command,arg1,arg2):
+        pass
+
+
 '''main script start'''
 if __name__ == "__main__":
     script, dir_path = argv
