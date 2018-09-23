@@ -54,6 +54,8 @@ class VMTranslator(object):
                             self.codewriter.write_if(dir_path,dirname,command,arg1,arg2)
                         if command == 'goto':
                             self.codewriter.write_goto(dir_path,dirname,command,arg1,arg2)
+                        if command == 'function':
+                            self.codewriter.write_function(dir_path,dirname,command,arg1,arg2)
 
 
     def get_argdirname(self,dir_path):
@@ -514,8 +516,15 @@ class CodeWriter(object):
             f.write('@' + arg1 + '\n')
             f.write('D;JNE\n')
 
-    #def write_function(self,dir_path,dirname,command,arg1,arg2):
-    #    pass
+    def write_function(self,dir_path,dirname,command,arg1,arg2):
+        with open(dir_path + dirname +'.asm','a') as f:
+            # pushの関数を再利用できないか？
+            self.write_push_pop(dir_path,dirname,'push','constant',arg1) # 訂正の必要あり         
+            self.write_push_pop(dir_path,dirname,'push','constant',LCL)
+            self.write_push_pop(dir_path,dirname,'push','constant',ARG)
+            self.write_push_pop(dir_path,dirname,'push','constant',THIS)
+            self.write_push_pop(dir_path,dirname,'push','constant',THAT)
+
 
 
 '''main script start'''
