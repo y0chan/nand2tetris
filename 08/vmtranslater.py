@@ -516,15 +516,27 @@ class CodeWriter(object):
             f.write('@' + arg1 + '\n')
             f.write('D;JNE\n')
 
-    def write_function(self,dir_path,dirname,command,arg1,arg2):
+    def write_call(self,dir_path,dirname,command,arg1,arg2):
         with open(dir_path + dirname +'.asm','a') as f:
             # pushの関数を再利用できないか？
-            self.write_push_pop(dir_path,dirname,'push','constant',arg1) # 訂正の必要あり         
-            self.write_push_pop(dir_path,dirname,'push','constant',LCL)
-            self.write_push_pop(dir_path,dirname,'push','constant',ARG)
-            self.write_push_pop(dir_path,dirname,'push','constant',THIS)
-            self.write_push_pop(dir_path,dirname,'push','constant',THAT)
+            # return_addressはreturn_address_関数名でやってみる
+            # lavelには.が入ってもよい?
+            return_address_symbol = 'return_address_' + arg1
+            self.write_push_pop(dir_path,dirname,'push','constant',return_address_symbol)
+            self.write_push_pop(dir_path,dirname,'push','constant','LCL')
+            self.write_push_pop(dir_path,dirname,'push','constant','LCL')
+            self.write_push_pop(dir_path,dirname,'push','constant','ARG')
+            self.write_push_pop(dir_path,dirname,'push','constant','THIS')
+            self.write_push_pop(dir_path,dirname,'push','constant','THAT')
+            # 途中です。
 
+    def write_function(self,dir_path,dirname,command,arg1,arg2):
+        # 関数のラベルはそのまま関数名で
+        f.write('(' + arg1 + ')' +'\n')
+        #　arg2 個のローカル変数を0に初期化する
+        # ここも書き直します
+        for i in range(0, int(arg2)):
+            self.write_push_pop(dir_path,dirname,'push','local','0')
 
 
 '''main script start'''
