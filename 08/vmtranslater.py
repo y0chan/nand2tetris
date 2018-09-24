@@ -532,12 +532,17 @@ class CodeWriter(object):
 
     def write_function(self,dir_path,dirname,command,arg1,arg2):
         # 関数のラベルはそのまま関数名で
-        f.write('(' + arg1 + ')' +'\n')
-        #　arg2 個のローカル変数を0に初期化する
-        # ここも書き直します
+        with open(dir_path + dirname +'.asm','a') as f:
+            f.write('(' + arg1 + ')' +'\n')
+            #　arg2 個のローカル変数を0に初期化する
+            # ラベルを使う書き方にしたほうがよい？
         for i in range(0, int(arg2)):
-            self.write_push_pop(dir_path,dirname,'push','local','0')
-
+            self.write_push_pop(dir_path,dirname,'push','constant','0')
+            self.write_push_pop(dir_path,dirname,'pop','local',str(i))
+            # 実際はローカル変数が代入されたことになるので、SP += 1
+            # push pop の最後の操作を無駄にしているので、もっとよくかけるだろこれ。。。。
+            with open(dir_path + dirname +'.asm','a') as f:
+                self.write_SP_plus(f)
 
 '''main script start'''
 if __name__ == "__main__":
