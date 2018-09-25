@@ -548,7 +548,66 @@ class CodeWriter(object):
 
     def write_return(self,dir_path,dirname,command,arg1,arg2):
         with open(dir_path + dirname +'.asm','a') as f:
-            f.write('test\n')
+            # FRAME = LCL
+            f.write('@LCL\n')
+            f.write('D=M\n')
+            f.write('@R5\n') # Ram[5] = FLAME
+            f.write('M=D\n')
+            # RET = *(FLAME - 5)
+            f.write('@5\n')
+            f.write('A=D-A\n')
+            f.write('D=M\n')
+            f.write('@R6\n') # Ram[6] = RET
+            f.write('M=D\n')
+            # *ARG = pop()
+            f.write('@SP\n')
+            f.write('D=M\n')
+            f.write('@ARG\n')
+            f.write('M=D\n')
+            # SP = ARG + 1
+            f.write('D=M\n')
+            f.write('@1\n')
+            f.write('D=D+1')
+            f.write('@SP\n')
+            f.write('M=D\n')
+            # THAT = *(FLAME - 1)
+            f.write('@R5\n')
+            f.write('D=M\n')
+            f.write('@1\n')
+            f.write('A=D-A\n')
+            f.write('D=M\n')
+            f.write('@THAT\n')
+            f.write('M=D\n')
+            # THIS = *(FLAME - 2)
+            f.write('@R5\n')
+            f.write('D=M\n')
+            f.write('@2\n')
+            f.write('A=D-A\n')
+            f.write('D=M\n')
+            f.write('@THIS\n')
+            f.write('M=D\n')
+            # ARG = *(FLAME - 3)
+            f.write('@R5\n')
+            f.write('D=M\n')
+            f.write('@3\n')
+            f.write('A=D-A\n')
+            f.write('D=M\n')
+            f.write('@ARG\n')
+            f.write('M=D\n')
+            # LCL = *(FLAME - 4)
+            f.write('@R5\n')
+            f.write('D=M\n')
+            f.write('@4\n')
+            f.write('A=D-A\n')
+            f.write('D=M\n')
+            f.write('@LCL\n')
+            f.write('M=D\n')
+            # goto RET
+            # 途中です。
+
+
+
+
 
 '''main script start'''
 if __name__ == "__main__":
