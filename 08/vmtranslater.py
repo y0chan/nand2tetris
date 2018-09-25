@@ -56,6 +56,8 @@ class VMTranslator(object):
                             self.codewriter.write_goto(dir_path,dirname,command,arg1,arg2)
                         if command == 'function':
                             self.codewriter.write_function(dir_path,dirname,command,arg1,arg2)
+                        if command == 'return':
+                            self.codewriter.write_return(dir_path,dirname,command,arg1,arg2)
 
 
     def get_argdirname(self,dir_path):
@@ -543,6 +545,10 @@ class CodeWriter(object):
             # push pop の最後の操作を無駄にしているので、もっとよくかけるだろこれ。。。。
             with open(dir_path + dirname +'.asm','a') as f:
                 self.write_SP_plus(f)
+
+    def write_return(self,dir_path,dirname,command,arg1,arg2):
+        with open(dir_path + dirname +'.asm','a') as f:
+            f.write('test\n')
 
 '''main script start'''
 if __name__ == "__main__":
