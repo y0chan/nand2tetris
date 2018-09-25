@@ -567,7 +567,7 @@ class CodeWriter(object):
             # SP = ARG + 1
             f.write('D=M\n')
             f.write('@1\n')
-            f.write('D=D+1')
+            f.write('D=D+1\n')
             f.write('@SP\n')
             f.write('M=D\n')
             # THAT = *(FLAME - 1)
