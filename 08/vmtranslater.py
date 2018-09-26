@@ -604,6 +604,8 @@ class CodeWriter(object):
             f.write('M=D\n')
             # goto RET
             # 途中です。
+            #　まだ
+            
 
 
 
