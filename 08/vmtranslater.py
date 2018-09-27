@@ -552,29 +552,30 @@ class CodeWriter(object):
             # OK?
             f.write('@LCL\n')
             f.write('D=M\n')
-            f.write('@R5\n') # Ram[5] = FLAME
+            f.write('@R13\n') # Ram[13] = FLAME
             f.write('M=D\n')
             # RET = *(FLAME - 5)
             f.write('@5\n')
             f.write('A=D-A\n')
             f.write('D=M\n')
-            f.write('@R6\n') # Ram[6] = RET
+            f.write('@R14\n') # Ram[14] = RET
             f.write('M=D\n')
             # *ARG = pop()
             f.write('@SP\n')
+            f.write('A=M-1\n')
             f.write('D=M\n')
             f.write('@ARG\n')
+            f.write('A=M\n')
             f.write('M=D\n')
             # SP = ARG + 1
-            # dame
-            f.write('D=A\n')
-            f.write('@1\n')
+            f.write('@ARG\n')
+            f.write('D=M\n')
             f.write('D=D+1\n')
             f.write('@SP\n')
             f.write('M=D\n')
             # THAT = *(FLAME - 1)
             # OK?
-            f.write('@R5\n')
+            f.write('@R13\n')
             f.write('D=M\n')
             f.write('@1\n')
             f.write('A=D-A\n')
@@ -583,7 +584,7 @@ class CodeWriter(object):
             f.write('M=D\n')
             # THIS = *(FLAME - 2)
             # OK?
-            f.write('@R5\n')
+            f.write('@R13\n')
             f.write('D=M\n')
             f.write('@2\n')
             f.write('A=D-A\n')
@@ -592,7 +593,7 @@ class CodeWriter(object):
             f.write('M=D\n')
             # ARG = *(FLAME - 3)
             # OK?
-            f.write('@R5\n')
+            f.write('@R13\n')
             f.write('D=M\n')
             f.write('@3\n')
             f.write('A=D-A\n')
@@ -601,7 +602,7 @@ class CodeWriter(object):
             f.write('M=D\n')
             # LCL = *(FLAME - 4)
             # OK?
-            f.write('@R5\n')
+            f.write('@R13\n')
             f.write('D=M\n')
             f.write('@4\n')
             f.write('A=D-A\n')
