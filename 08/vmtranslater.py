@@ -549,6 +549,7 @@ class CodeWriter(object):
     def write_return(self,dir_path,dirname,command,arg1,arg2):
         with open(dir_path + dirname +'.asm','a') as f:
             # FRAME = LCL
+            # OK?
             f.write('@LCL\n')
             f.write('D=M\n')
             f.write('@R5\n') # Ram[5] = FLAME
@@ -565,12 +566,14 @@ class CodeWriter(object):
             f.write('@ARG\n')
             f.write('M=D\n')
             # SP = ARG + 1
-            f.write('D=M\n')
+            # dame
+            f.write('D=A\n')
             f.write('@1\n')
             f.write('D=D+1\n')
             f.write('@SP\n')
             f.write('M=D\n')
             # THAT = *(FLAME - 1)
+            # OK?
             f.write('@R5\n')
             f.write('D=M\n')
             f.write('@1\n')
@@ -579,6 +582,7 @@ class CodeWriter(object):
             f.write('@THAT\n')
             f.write('M=D\n')
             # THIS = *(FLAME - 2)
+            # OK?
             f.write('@R5\n')
             f.write('D=M\n')
             f.write('@2\n')
@@ -587,6 +591,7 @@ class CodeWriter(object):
             f.write('@THIS\n')
             f.write('M=D\n')
             # ARG = *(FLAME - 3)
+            # OK?
             f.write('@R5\n')
             f.write('D=M\n')
             f.write('@3\n')
@@ -595,6 +600,7 @@ class CodeWriter(object):
             f.write('@ARG\n')
             f.write('M=D\n')
             # LCL = *(FLAME - 4)
+            # OK?
             f.write('@R5\n')
             f.write('D=M\n')
             f.write('@4\n')
@@ -605,7 +611,7 @@ class CodeWriter(object):
             # goto RET
             # 途中です。
             #　まだ
-            
+
 
 
 
