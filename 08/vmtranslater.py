@@ -38,9 +38,14 @@ class VMTranslator(object):
             if file_ext == '.vm':
                 vm_files.append(file_path)
 
+            # 次のif文で利用
+            if (file_name + file_ext) == 'Sys.vm':
+                tmp = file_path
+
         # もしSys.vmがあるのならば先頭にする
-        if 'Sys.vm' in vm_files:
-            vm_fils.insert(0,'Sys.vm')
+        if tmp:
+            vm_files.remove(tmp)
+            vm_files.insert(0,tmp)
             print(vm_files)
 
         for vm_file in vm_files:
