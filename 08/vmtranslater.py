@@ -31,6 +31,9 @@ class VMTranslator(object):
         # ディレクトリ内のvmファイルのリストを取得
         vm_files = []
 
+        # Sys.vmで利用する
+        tmp = None
+
         #ディレクトリ内のvmファイルをリストで取得する
         for file in os.listdir(self.dir_path):
             file_path = os.path.join(dir_path,file)
@@ -46,9 +49,16 @@ class VMTranslator(object):
         if tmp:
             vm_files.remove(tmp)
             vm_files.insert(0,tmp)
-            print(vm_files)
 
         for vm_file in vm_files:
+
+            # スタティック変数の命名にvmの関数名が必要
+            file = os.path.basename(vm_file)
+            file_name, file_ext = os.path.splitext(file)
+
+            # lavelの命名規則に利用
+            function_name = None
+
             with open(vm_file) as vm:
                 for vm_line in vm:
                     command,arg1,arg2,command_type = self.parser.parser(vm_line)
@@ -58,17 +68,19 @@ class VMTranslator(object):
                             self.codewriter.write_arithmetric(dir_path,dirname,command,arg1,arg2)
                         if command_type == 'C_POP' or command_type == 'C_PUSH':
                             self.codewriter.write_push_pop(dir_path,dirname,command,arg1,arg2)
-                        if command == 'label':
-                            self.codewriter.write_label(dir_path,dirname,command,arg1,arg2)
                         if command == 'if-goto':
                             self.codewriter.write_if(dir_path,dirname,command,arg1,arg2)
                         if command == 'goto':
                             self.codewriter.write_goto(dir_path,dirname,command,arg1,arg2)
                         if command == 'function':
                             self.codewriter.write_function(dir_path,dirname,command,arg1,arg2)
+                            # lavelの生成に利用するので関数名を取得する
+                            function_command, function_name, function_arg = vm_line.split()
+                        if command == 'label':
+                            self.codewriter.write_label(dir_path,dirname,command,arg1,arg2,function_name)
                         if command == 'return':
                             self.codewriter.write_return(dir_path,dirname,command,arg1,arg2)
-
+                            function_name = None
 
     def get_argdirname(self,dir_path):
         tmp_array = dir_path.split('/')
@@ -509,9 +521,12 @@ class CodeWriter(object):
             f.write('@SP\n')
             f.write('M=M-1\n')
 
-    def write_label(self,dir_path,dirname,command,arg1,arg2):
+    def write_label(self,dir_path,dirname,command,arg1,arg2,function_name):
         with open(dir_path + dirname +'.asm','a') as f:
-            f.write('('+ arg1 +')\n')
+            if function_name:
+                f.write('(' + function_name +'$' + arg1 + ')\n')
+            else:
+                f.write('('+ arg1 +')\n')
 
     def write_goto(self,dir_path,dirname,command,arg1,arg2):
         with open(dir_path + dirname +'.asm','a') as f:
@@ -543,7 +558,7 @@ class CodeWriter(object):
             # 途中です。
 
     def write_function(self,dir_path,dirname,command,arg1,arg2):
-        # 関数のラベルはそのまま関数名で
+        # 関数のラベルはそのまま関数名でOK
         with open(dir_path + dirname +'.asm','a') as f:
             f.write('(' + arg1 + ')' +'\n')
             #　arg2 個のローカル変数を0に初期化する
@@ -620,13 +635,7 @@ class CodeWriter(object):
             f.write('@LCL\n')
             f.write('M=D\n')
             # goto RET
-            # 途中です。
-            #　まだ
-
-
-
-
-
+            # 途中?続きがある?
 
 '''main script start'''
 if __name__ == "__main__":
