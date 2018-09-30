@@ -67,7 +67,7 @@ class VMTranslator(object):
                         if command_type == 'C_ARITHMETRIC':
                             self.codewriter.write_arithmetric(dir_path,dirname,command,arg1,arg2)
                         if command_type == 'C_POP' or command_type == 'C_PUSH':
-                            self.codewriter.write_push_pop(dir_path,dirname,command,arg1,arg2)
+                            self.codewriter.write_push_pop(dir_path,dirname,command,arg1,arg2,file_name)
                         if command == 'if-goto':
                             self.codewriter.write_if(dir_path,dirname,command,arg1,arg2)
                         if command == 'goto':
@@ -299,7 +299,7 @@ class CodeWriter(object):
 
                 self.lavel_count += 1
 
-    def write_push_pop(self,dir_path,dirname,command,arg1,arg2):
+    def write_push_pop(self,dir_path,dirname,command,arg1,arg2,file_name):
         with open(dir_path + dirname +'.asm','a') as f:
             if command == 'push':
                 if arg1 == 'constant':
@@ -387,11 +387,16 @@ class CodeWriter(object):
                     self.write_SP_plus(f)
 
                 if arg1 == 'static':
-                    f.write('@'+str(arg2)+'\n')
-                    f.write('D=A\n')
-                    f.write('@16\n')
-                    f.write('A=D+A\n') # A = 16 + arg2
-                    f.write('D=M\n') # D = Ram[16 + arg2]
+                    #f.write('@'+str(arg2)+'\n')
+                    #f.write('D=A\n')
+                    #f.write('@16\n')
+                    #f.write('A=D+A\n') # A = 16 + arg2
+                    #f.write('D=M\n') # D = Ram[16 + arg2]
+                    #f.write('@SP\n')
+                    #f.write('A=M\n')
+                    #f.write('M=D\n')
+                    f.write('@' + file_name + '.' + arg2 + '\n')
+                    f.write('D=M\n')
                     f.write('@SP\n')
                     f.write('A=M\n')
                     f.write('M=D\n')
@@ -498,17 +503,24 @@ class CodeWriter(object):
                     self.write_SP_minus(f)
 
                 if arg1 == 'static':
-                    f.write('@'+str(arg2)+'\n')
-                    f.write('D=A\n')
-                    f.write('@16\n')
-                    f.write('D=D+A\n') #ここthatと違う
-                    f.write('@R5\n')
-                    f.write('M=D\n')
+                    # これXXX.jで作成するラベルはeqとかで作成したやつとかぶらない？
+                    # 結局static変数ってなによ?
+                    #f.write('@'+str(arg2)+'\n')
+                    #f.write('D=A\n')
+                    #f.write('@16\n')
+                    #f.write('D=D+A\n') #ここthatと違う
+                    #f.write('@R5\n')
+                    #f.write('M=D\n')
+                    #f.write('@SP\n')
+                    #f.write('A=M-1\n')
+                    #f.write('D=M\n')
+                    #f.write('@R5\n')
+                    #f.write('A=M\n')
+                    #f.write('M=D\n')
                     f.write('@SP\n')
                     f.write('A=M-1\n')
                     f.write('D=M\n')
-                    f.write('@R5\n')
-                    f.write('A=M\n')
+                    f.write('@' + file_name + '.' + arg2 + '\n')
                     f.write('M=D\n')
                     # SPの更新
                     self.write_SP_minus(f)
@@ -549,12 +561,12 @@ class CodeWriter(object):
             # return_addressはreturn_address_関数名でやってみる
             # lavelには.が入ってもよい?
             return_address_symbol = 'return_address_' + arg1
-            self.write_push_pop(dir_path,dirname,'push','constant',return_address_symbol)
-            self.write_push_pop(dir_path,dirname,'push','constant','LCL')
-            self.write_push_pop(dir_path,dirname,'push','constant','LCL')
-            self.write_push_pop(dir_path,dirname,'push','constant','ARG')
-            self.write_push_pop(dir_path,dirname,'push','constant','THIS')
-            self.write_push_pop(dir_path,dirname,'push','constant','THAT')
+            self.write_push_pop(dir_path,dirname,'push','constant',return_address_symbol,None)
+            self.write_push_pop(dir_path,dirname,'push','constant','LCL',None)
+            self.write_push_pop(dir_path,dirname,'push','constant','LCL',None)
+            self.write_push_pop(dir_path,dirname,'push','constant','ARG',None)
+            self.write_push_pop(dir_path,dirname,'push','constant','THIS',None)
+            self.write_push_pop(dir_path,dirname,'push','constant','THAT',None)
             # 途中です。
 
     def write_function(self,dir_path,dirname,command,arg1,arg2):
@@ -564,8 +576,8 @@ class CodeWriter(object):
             #　arg2 個のローカル変数を0に初期化する
             # ラベルを使う書き方にしたほうがよい？
         for i in range(0, int(arg2)):
-            self.write_push_pop(dir_path,dirname,'push','constant','0')
-            self.write_push_pop(dir_path,dirname,'pop','local',str(i))
+            self.write_push_pop(dir_path,dirname,'push','constant','0',None)
+            self.write_push_pop(dir_path,dirname,'pop','local',str(i),None)
             # 実際はローカル変数が代入されたことになるので、SP += 1
             # push pop の最後の操作を無駄にしているので、もっとよくかけるだろこれ。。。。
             with open(dir_path + dirname +'.asm','a') as f:
