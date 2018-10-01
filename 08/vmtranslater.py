@@ -69,9 +69,9 @@ class VMTranslator(object):
                         if command_type == 'C_POP' or command_type == 'C_PUSH':
                             self.codewriter.write_push_pop(dir_path,dirname,command,arg1,arg2,file_name)
                         if command == 'if-goto':
-                            self.codewriter.write_if(dir_path,dirname,command,arg1,arg2)
+                            self.codewriter.write_if(dir_path,dirname,command,arg1,arg2,function_name)
                         if command == 'goto':
-                            self.codewriter.write_goto(dir_path,dirname,command,arg1,arg2)
+                            self.codewriter.write_goto(dir_path,dirname,command,arg1,arg2,function_name)
                         if command == 'function':
                             self.codewriter.write_function(dir_path,dirname,command,arg1,arg2)
                             # lavelの生成に利用するので関数名を取得する
@@ -540,12 +540,15 @@ class CodeWriter(object):
             else:
                 f.write('('+ arg1 +')\n')
 
-    def write_goto(self,dir_path,dirname,command,arg1,arg2):
+    def write_goto(self,dir_path,dirname,command,arg1,arg2,function_name):
         with open(dir_path + dirname +'.asm','a') as f:
-            f.write('@' + arg1 + '\n')
+            if function_name:
+                f.write('@' + function_name + '$' + arg1 + '\n')
+            else:
+                f.write('@' + arg1 + '\n')
             f.write('0;JMP\n')
 
-    def write_if(self,dir_path,dirname,command,arg1,arg2):
+    def write_if(self,dir_path,dirname,command,arg1,arg2,function_name):
         with open(dir_path + dirname +'.asm','a') as f:
             f.write('@SP\n')
             f.write('A=M-1\n')
@@ -577,7 +580,7 @@ class CodeWriter(object):
             # ラベルを使う書き方にしたほうがよい？
         for i in range(0, int(arg2)):
             self.write_push_pop(dir_path,dirname,'push','constant','0',None)
-            self.write_push_pop(dir_path,dirname,'pop','local',str(i),None)
+            self.write_push_pop(dir_path,dirname,'pop','local',str(i),None  1)
             # 実際はローカル変数が代入されたことになるので、SP += 1
             # push pop の最後の操作を無駄にしているので、もっとよくかけるだろこれ。。。。
             with open(dir_path + dirname +'.asm','a') as f:
