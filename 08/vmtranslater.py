@@ -555,7 +555,10 @@ class CodeWriter(object):
             f.write('D=M\n')
             # SPの更新
             self.write_SP_minus(f)
-            f.write('@' + arg1 + '\n')
+            if function_name:
+                f.write('@' + function_name + '$' + arg1 + '\n')
+            else:
+                f.write('@' + arg1 + '\n')
             f.write('D;JNE\n')
 
     def write_call(self,dir_path,dirname,command,arg1,arg2):
@@ -580,7 +583,7 @@ class CodeWriter(object):
             # ラベルを使う書き方にしたほうがよい？
         for i in range(0, int(arg2)):
             self.write_push_pop(dir_path,dirname,'push','constant','0',None)
-            self.write_push_pop(dir_path,dirname,'pop','local',str(i),None  1)
+            self.write_push_pop(dir_path,dirname,'pop','local',str(i),None)
             # 実際はローカル変数が代入されたことになるので、SP += 1
             # push pop の最後の操作を無駄にしているので、もっとよくかけるだろこれ。。。。
             with open(dir_path + dirname +'.asm','a') as f:
