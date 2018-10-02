@@ -76,6 +76,8 @@ class VMTranslator(object):
                             self.codewriter.write_function(dir_path,dirname,command,arg1,arg2)
                             # lavelの生成に利用するので関数名を取得する
                             function_command, function_name, function_arg = vm_line.split()
+                        if command == 'call':
+                            self.codewriter.write_call(self,dir_path,dirname,command,arg1,arg2)
                         if command == 'label':
                             self.codewriter.write_label(dir_path,dirname,command,arg1,arg2,function_name)
                         if command == 'return':
@@ -566,14 +568,56 @@ class CodeWriter(object):
             # pushの関数を再利用できないか？
             # return_addressはreturn_address_関数名でやってみる
             # lavelには.が入ってもよい?
+
+            # push return_address
             return_address_symbol = 'return_address_' + arg1
             self.write_push_pop(dir_path,dirname,'push','constant',return_address_symbol,None)
-            self.write_push_pop(dir_path,dirname,'push','constant','LCL',None)
-            self.write_push_pop(dir_path,dirname,'push','constant','LCL',None)
-            self.write_push_pop(dir_path,dirname,'push','constant','ARG',None)
-            self.write_push_pop(dir_path,dirname,'push','constant','THIS',None)
-            self.write_push_pop(dir_path,dirname,'push','constant','THAT',None)
-            # 途中です。
+            # push LCL
+            f.write('@LCL\n')
+            f.write('D=M\n')
+            f.write('@SP\n')
+            f.write('A=M\n')
+            f.write('M=D\n')
+            self.write_SP_plus(f)
+            # push ARG
+            f.write('@ARG\n')
+            f.write('D=M\n')
+            f.write('@SP\n')
+            f.write('A=M\n')
+            f.write('M=D\n')
+            self.write_SP_plus(f)
+            # push THIS
+            f.write('@THIS\n')
+            f.write('D=M\n')
+            f.write('@SP\n')
+            f.write('A=M\n')
+            f.write('M=D\n')
+            self.write_SP_plus(f)
+            # push THAT
+            f.write('@THAT\n')
+            f.write('D=M\n')
+            f.write('@SP\n')
+            f.write('A=M\n')
+            f.write('M=D\n')
+            self.write_SP_plus(f)
+            # ARG = SP - n -5
+            f.write('@' + arg2 + '\n')
+            f.write('D=A\n')
+            f.write('@5\n')
+            f.write('D=D+A\n') # D = n + 5
+            f.write('@SP\n')
+            f.write('D=M-D\n') # SP-(n+5)
+            f.write('@ARG\n')
+            f.write('M=D\n')
+            # LCL = SP
+            f.write('@SP\n')
+            f.write('D=M\n')
+            f.write('@LCL\n')
+            f.write('M=D\n')
+            # goto f
+            #self.write_goto(self,dir_path,dirname,command,arg1,arg2,function_name)
+            # (return-address)
+
 
     def write_function(self,dir_path,dirname,command,arg1,arg2):
         # 関数のラベルはそのまま関数名でOK
