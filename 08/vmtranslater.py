@@ -77,7 +77,7 @@ class VMTranslator(object):
                             # lavelの生成に利用するので関数名を取得する
                             function_command, function_name, function_arg = vm_line.split()
                         if command == 'call':
-                            self.codewriter.write_call(self,dir_path,dirname,command,arg1,arg2)
+                            self.codewriter.write_call(dir_path,dirname,command,arg1,arg2)
                         if command == 'label':
                             self.codewriter.write_label(dir_path,dirname,command,arg1,arg2,function_name)
                         if command == 'return':
@@ -571,7 +571,11 @@ class CodeWriter(object):
 
             # push return_address
             return_address_symbol = 'return_address_' + arg1
-            self.write_push_pop(dir_path,dirname,'push','constant',return_address_symbol,None)
+            f.write('@' + return_address_symbol + '\n')
+            f.write('D=A\n')
+            f.write('@SP\n')
+            f.write('M=D\n')
+            self.write_SP_plus(f)
             # push LCL
             f.write('@LCL\n')
             f.write('D=M\n')
@@ -615,8 +619,9 @@ class CodeWriter(object):
             f.write('@LCL\n')
             f.write('M=D\n')
             # goto f
-            #self.write_goto(self,dir_path,dirname,command,arg1,arg2,function_name)
+            self.write_goto(dir_path,dirname,command,arg1,arg2,arg1)
             # (return-address)
+            f.write('(' + return_address_symbol + ')\n')
 
 
     def write_function(self,dir_path,dirname,command,arg1,arg2):
