@@ -702,7 +702,7 @@ class CodeWriter(object):
             f.write('@LCL\n')
             f.write('M=D\n')
             # goto RET
-            # 途中?続きがある
+            # 
 
 '''main script start'''
 if __name__ == "__main__":
