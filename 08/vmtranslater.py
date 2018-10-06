@@ -619,6 +619,7 @@ class CodeWriter(object):
             f.write('@LCL\n')
             f.write('M=D\n')
             # goto f
+            # 原因はこいつだとわかった。
             self.write_goto(dir_path,dirname,command,arg1,arg2,arg1)
             # (return-address)
             f.write('(' + return_address_symbol + ')\n')
@@ -702,7 +703,7 @@ class CodeWriter(object):
             f.write('@LCL\n')
             f.write('M=D\n')
             # goto RET
-            # 
+            #
 
 '''main script start'''
 if __name__ == "__main__":
