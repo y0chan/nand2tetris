@@ -77,7 +77,7 @@ class VMTranslator(object):
                             # lavelの生成に利用するので関数名を取得する
                             function_command, function_name, function_arg = vm_line.split()
                         if command == 'call':
-                            self.codewriter.write_call(dir_path,dirname,command,arg1,arg2,function_name)
+                            self.codewriter.write_call(dir_path,dirname,command,arg1,arg2)
                         if command == 'label':
                             self.codewriter.write_label(dir_path,dirname,command,arg1,arg2,function_name)
                         if command == 'return':
@@ -563,7 +563,7 @@ class CodeWriter(object):
                 f.write('@' + arg1 + '\n')
             f.write('D;JNE\n')
 
-    def write_call(self,dir_path,dirname,command,arg1,arg2,function_name):
+    def write_call(self,dir_path,dirname,command,arg1,arg2):
         with open(dir_path + dirname +'.asm','a') as f:
             # pushの関数を再利用できないか？
             # return_addressはreturn_address_関数名でやってみる
@@ -634,17 +634,19 @@ class CodeWriter(object):
                 f.write('D=A\n')
                 f.write('@SP\n')
                 f.write('M=D\n')
+                self.write_call(dir_path,dirname,command,arg1,'0')
 
-            f.write('(' + arg1 + ')' +'\n')
-            #　arg2 個のローカル変数を0に初期化する
-            # ラベルを使う書き方にしたほうがよい？
-        for i in range(0, int(arg2)):
-            self.write_push_pop(dir_path,dirname,'push','constant','0',None)
-            self.write_push_pop(dir_path,dirname,'pop','local',str(i),None)
-            # 実際はローカル変数が代入されたことになるので、SP += 1
-            # push pop の最後の操作を無駄にしているので、もっとよくかけるだろこれ。。。。
-            with open(dir_path + dirname +'.asm','a') as f:
-                self.write_SP_plus(f)
+            else:
+                f.write('(' + arg1 + ')' +'\n')
+                #　arg2 個のローカル変数を0に初期化する
+                # ラベルを使う書き方にしたほうがよい？
+                for i in range(0, int(arg2)):
+                    self.write_push_pop(dir_path,dirname,'push','constant','0',None)
+                    self.write_push_pop(dir_path,dirname,'pop','local',str(i),None)
+                    # 実際はローカル変数が代入されたことになるので、SP += 1
+                    # push pop の最後の操作を無駄にしているので、もっとよくかけるだろこれ。。。。
+                    with open(dir_path + dirname +'.asm','a') as f:
+                        self.write_SP_plus(f)
 
     def write_return(self,dir_path,dirname,command,arg1,arg2):
         with open(dir_path + dirname +'.asm','a') as f:
