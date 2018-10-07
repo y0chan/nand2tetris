@@ -629,6 +629,12 @@ class CodeWriter(object):
     def write_function(self,dir_path,dirname,command,arg1,arg2):
         # 関数のラベルはそのまま関数名でOK
         with open(dir_path + dirname +'.asm','a') as f:
+            if arg1 == 'Sys.init':
+                f.write('@256\n')
+                f.write('D=A\n')
+                f.write('@SP\n')
+                f.write('M=D\n')
+
             f.write('(' + arg1 + ')' +'\n')
             #　arg2 個のローカル変数を0に初期化する
             # ラベルを使う書き方にしたほうがよい？
@@ -704,7 +710,8 @@ class CodeWriter(object):
             f.write('@LCL\n')
             f.write('M=D\n')
             # goto RET
-            #
+            f.write('@R14\n')
+            f.write('0;JMP\n')
 
 '''main script start'''
 if __name__ == "__main__":
