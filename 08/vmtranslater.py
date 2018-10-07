@@ -77,7 +77,7 @@ class VMTranslator(object):
                             # lavelの生成に利用するので関数名を取得する
                             function_command, function_name, function_arg = vm_line.split()
                         if command == 'call':
-                            self.codewriter.write_call(dir_path,dirname,command,arg1,arg2)
+                            self.codewriter.write_call(dir_path,dirname,command,arg1,arg2,function_name)
                         if command == 'label':
                             self.codewriter.write_label(dir_path,dirname,command,arg1,arg2,function_name)
                         if command == 'return':
@@ -563,7 +563,7 @@ class CodeWriter(object):
                 f.write('@' + arg1 + '\n')
             f.write('D;JNE\n')
 
-    def write_call(self,dir_path,dirname,command,arg1,arg2):
+    def write_call(self,dir_path,dirname,command,arg1,arg2,function_name):
         with open(dir_path + dirname +'.asm','a') as f:
             # pushの関数を再利用できないか？
             # return_addressはreturn_address_関数名でやってみる
@@ -574,6 +574,7 @@ class CodeWriter(object):
             f.write('@' + return_address_symbol + '\n')
             f.write('D=A\n')
             f.write('@SP\n')
+            f.write('A=M\n')
             f.write('M=D\n')
             self.write_SP_plus(f)
             # push LCL
@@ -619,8 +620,8 @@ class CodeWriter(object):
             f.write('@LCL\n')
             f.write('M=D\n')
             # goto f
-            # 原因はこいつだとわかった。
-            self.write_goto(dir_path,dirname,command,arg1,arg2,arg1)
+            f.write('@' +arg1 + '\n')
+            f.write('0;JMP\n')
             # (return-address)
             f.write('(' + return_address_symbol + ')\n')
 
