@@ -68,6 +68,8 @@ class VMTranslator(object):
                             self.codewriter.write_arithmetric(dir_path,dirname,command,arg1,arg2)
                         if command_type == 'C_POP' or command_type == 'C_PUSH':
                             self.codewriter.write_push_pop(dir_path,dirname,command,arg1,arg2,file_name)
+                        if command == 'label':
+                            self.codewriter.write_label(dir_path,dirname,command,arg1,arg2,function_name)
                         if command == 'if-goto':
                             self.codewriter.write_if(dir_path,dirname,command,arg1,arg2,function_name)
                         if command == 'goto':
@@ -85,11 +87,9 @@ class VMTranslator(object):
                             function_command, function_name, function_arg = vm_line.split()
                         if command == 'call':
                             self.codewriter.write_call(dir_path,dirname,command,arg1,arg2)
-                        if command == 'label':
-                            self.codewriter.write_label(dir_path,dirname,command,arg1,arg2,function_name)
                         if command == 'return':
                             self.codewriter.write_return(dir_path,dirname,command,arg1,arg2)
-                            function_name = None
+                            #function_name = None
 
     def get_argdirname(self,dir_path):
         tmp_array = dir_path.split('/')
