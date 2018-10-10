@@ -89,7 +89,7 @@ class VMTranslator(object):
                             self.codewriter.write_call(dir_path,dirname,command,arg1,arg2)
                         if command == 'return':
                             self.codewriter.write_return(dir_path,dirname,command,arg1,arg2)
-                function_name = None
+                    function_name = None
 
     def get_argdirname(self,dir_path):
         tmp_array = dir_path.split('/')
